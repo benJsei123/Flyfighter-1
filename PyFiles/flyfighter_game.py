@@ -10,16 +10,12 @@ from sound import Sound
 
 class Game:
 
-    
-    
-
     def __init__(self) -> None:
         pg.init()
         
         self.player = Player(game=self)
         self.game_stats = GameStats(game=self)
         self.game_settings = GameSettings(game=self)
-        
         
         sw,sh = self.game_settings.screen_width,self.game_settings.screen_height
         self.screen = pg.display.set_mode((sw,sh))
@@ -30,8 +26,6 @@ class Game:
         self.sound = Sound()
 
         self.player.init_missing_attributes() #due to order of constructor calls
-        
-
 
         self.game_active = False              # MUST be before Button is created
         self.first = True

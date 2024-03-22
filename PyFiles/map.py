@@ -4,7 +4,7 @@ from powerup_manager import PowerUpManager, PowerUp
 from enemy_manager import EnemyManager, Enemy
 
 class Map:
-    tile_image_paths = [] #holds paths to tile images
+    
 
     def __init__(self, game) -> None:
         self.game = game
@@ -15,7 +15,7 @@ class Map:
         
 
         #Tiles
-        self.tile_bluprints = self.create_tile_blueprints() #holds MapTile objects
+        self.tile_blueprints = [] #holds MapTile objects
         self.visited_tiles_amount = 1
         self.visited_tiles = []
         self.tiles = []
@@ -31,6 +31,10 @@ class Map:
     def initialize_map(self):
         self.gen_background()
         self.gen_initial_map()
+        self.create_tile_blueprints()
+        for tile in self.tile_blueprints:
+            print(tile.position)
+            print(tile.entrances)
         #TODO: Start sth like a thread here to generate new Tiles all the time
         #TODO use gen_new_tiles() somewhere here
         
@@ -40,7 +44,7 @@ class Map:
         background_surface = pg.Surface(self.game_settings.map_size)
 
         # Generiere das Hintergrundmuster wie zuvor
-        tile_size = self.game_settings.map_tile_size
+        tile_size = self.game_settings.small_tile_size
         checkerboard_tile = pg.Surface((tile_size, tile_size))
         checkerboard_tile.fill(pg.Color('white'))
         for x in range(0, tile_size, tile_size // 2):
@@ -68,30 +72,62 @@ class Map:
         #using the chosen tile's "can_connect" method
 
     
-    def create_tile_blueprints(self)->list:
+    def create_tile_blueprints(self):
         """ Creates a bunch of blueprints of tiles to be used by gen_new_tiles and gen_initial_map"""
-        tiles = []
-        for tile_image_path in Map.tile_image_paths:
-            position = (0,0)
-            entrances = {
-                "top": [],
-                "bottom": [],
-                "left": [],
-                "right": []
-            }
-    	    #TODO find a way to fill the entrance dict depending on the image of tile (CSV that holds info about each blueprint? Image recognisiton with pixel check for black/white?)
+        tile_images = self.load_tile_images()
 
-            tiles.append(MapTile(tile_image_path, position, entrances, self.powerup_mgr, self.enemy_mgr))
+        num = 1
+        for tile_image in tile_images:
+
+            entrances = self.check_entrances(tile_image)
             
+            self.tile_blueprints.append(MapTile(game=self.game,image=tile_image, position=(num,num),possible_spawns=[], entrances=entrances, powerup_mgr=self.powerup_mgr, enemy_mgr=self.enemy_mgr))
+            print("MapTile created")
+            num +=1
+            
+    def load_tile_images(self):
+        tile_images = [pg.image.load(path) for path in self.game_settings.tile_image_paths.values()]
+        return tile_images
+    
+    def is_transparent(self,pixel):
+        """Check if pixel transparent"""
+        return pixel.a == 0
+
+
+    def check_entrances(self,image):
+        # Koordinaten der möglichen Eingänge
+        coordinates = {
+            "top_left": (120, 1),
+            "top_right": (330, 1),
+            "right_top": (447, 100),
+            "right_bottom": (447, 330),
+            "bottom_right": (330, 447),
+            "bottom_left": (120, 447),
+            "left_bottom": (1, 330),
+            "left_top": (1, 100)
+        }
+        
+        entrances = []
+        for entrance, (x, y) in coordinates.items():
+            pixel = image.get_at((x, y))
+            if self.is_transparent(pixel):
+                entrances.append(entrance)
+        
+        return entrances
+
 
 class MapTile:
-    def __init__(self, image_path:str, position:tuple, entrances:dict,possible_spawns:list, powerup_mgr:PowerUpManager, enemy_mgr:EnemyManager ) -> None:
-        
-        self.image = pg.image.load(image_path)
+    def __init__(self, game,image, position:tuple, entrances:list,possible_spawns:list, powerup_mgr:PowerUpManager, enemy_mgr:EnemyManager ) -> None:
+        self.game = game
+        self.game_settings = self.game.game_settings
+        self.image = image
         self.position = position
         self.entrances = entrances #holds possible connections to other tiles
         self.powerups = [] #filled as soon place_entities called
         self.enemies = [] #filled as soon place_entities called
+
+        self.tile_size = self.game_settings.medium_tile_size
+
 
         self.powerup_mgr = powerup_mgr
         self.enemy_mgr = enemy_mgr
@@ -101,6 +137,9 @@ class MapTile:
         self.enemies_spawned = False
 
         self.place_entities() # should place some random entities on tile, when instantiated
+
+    def draw(self):
+        pass
 
     def place_entities(self):
         """ Places powerups and enemies randomly on possible spawn locations"""

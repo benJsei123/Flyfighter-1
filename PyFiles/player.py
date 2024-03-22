@@ -91,7 +91,7 @@ class Player:
         if event.type == pg.KEYDOWN:
             if event.key in Player.key_velocity:
                 self.direction = Player.key_velocity[event.key]
-                print("Set direction to " , self.direction)
+                
 
         elif event.type == pg.KEYUP:
             if event.key in Player.key_velocity.keys():  
