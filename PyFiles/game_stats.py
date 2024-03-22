@@ -1,7 +1,5 @@
-from flyfighter_game import Game
-
 class GameStats:
-    def __init__(self,game:Game) -> None:
+    def __init__(self,game) -> None:
         self.game = game
         self.player = game.player
 

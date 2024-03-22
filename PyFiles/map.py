@@ -1,19 +1,18 @@
 import random
 import pygame as pg
-from flyfighter_game import Game
 from powerup_manager import PowerUpManager, PowerUp
 from enemy_manager import EnemyManager, Enemy
 
 class Map:
     tile_image_paths = [] #holds paths to tile images
 
-    def __init__(self, game:Game) -> None:
+    def __init__(self, game) -> None:
         self.game = game
         self.screen = game.screen
         self.player = game.player
-        self.settings = game.settings
-        self.powerup_mgr = PowerUpManager()
-        self.enemy_mgr = EnemyManager()
+        self.game_settings = game.game_settings
+        self.background_surface = None
+        
 
         #Tiles
         self.tile_bluprints = self.create_tile_blueprints() #holds MapTile objects
@@ -22,9 +21,42 @@ class Map:
         self.tiles = []
         self.active_tile = None
 
+
+        self.powerup_mgr = PowerUpManager(game=self.game,tiles=self.tiles, player=self.player) #TODO the tile should be filled or updated at some point!!
+        self.enemy_mgr = EnemyManager()
+
+        self.initialize_map()
+    
+
+    def initialize_map(self):
+        self.gen_background()
+        self.gen_initial_map()
+        #TODO: Start sth like a thread here to generate new Tiles all the time
+        #TODO use gen_new_tiles() somewhere here
         
+
     def gen_background(self):
-        pass
+            # Erstelle eine Surface für den Hintergrund
+        background_surface = pg.Surface(self.game_settings.map_size)
+
+        # Generiere das Hintergrundmuster wie zuvor
+        tile_size = self.game_settings.map_tile_size
+        checkerboard_tile = pg.Surface((tile_size, tile_size))
+        checkerboard_tile.fill(pg.Color('white'))
+        for x in range(0, tile_size, tile_size // 2):
+            pg.draw.line(checkerboard_tile, self.game_settings.bg_line_color, (x, 0), (x, tile_size))
+        for y in range(0, tile_size, tile_size // 2):
+            pg.draw.line(checkerboard_tile, self.game_settings.bg_line_color, (0, y), (tile_size, y))
+
+        # Blit das karierte Muster über den gesamten Hintergrund
+        for x in range(0, self.game_settings.screen_width, tile_size):
+            for y in range(0, self.game_settings.screen_height, tile_size):
+                background_surface.blit(checkerboard_tile, (x, y))
+
+        # Speichere das generierte Surface für späteren Gebrauch
+        self.background_surface = background_surface
+
+
 
     def gen_initial_map(self):
         pass

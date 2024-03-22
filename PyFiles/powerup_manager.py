@@ -1,12 +1,12 @@
 from player import Player
 import random
 from abc import ABC, abstractmethod
-from flyfighter_game import Game
+
 
 class PowerUpManager:
-    def __init__(self, game:Game,tiles:list, player:Player) -> None:
+    def __init__(self, game,tiles:list, player:Player) -> None:
         self.game = game
-        self.settings = game.settings
+        self.game_settings = game.game_settings
         self.tiles = tiles #holds all tiles of Map 
         self.player = player
         self.powerups = [] #holds all active powerups
@@ -23,7 +23,7 @@ class PowerUpManager:
 
 class PowerUp(ABC):
     def __init__(self, powerup_mgr:PowerUpManager, position:tuple) -> None:
-        self.settings= powerup_mgr.settings
+        self.game_settings= powerup_mgr.game_settings
         self.image_path = ""
         self.amount = 0 # 100 fo HP means +100 HP, 10 for SPEED meand +10 speed (see inheriting classes)
         self.position = position
@@ -43,7 +43,7 @@ class HeartPointPowerUp(PowerUp):
         #start with self.image_path = ...
         #and intialize self.amount 
 
-        self.amount = int(10 * self.settings.get_difficulty_multiplier())
+        self.amount = int(10 * self.game_settings.get_difficulty_multiplier())
 
     #TODO implement abstract methods
 
@@ -51,17 +51,17 @@ class HeartPointPowerUp(PowerUp):
 class DamagePowerUp(PowerUp):
     def __init__(self) -> None:
         super().__init__()
-        self.amount = int(10 * self.settings.get_difficulty_multiplier())
+        self.amount = int(10 * self.game_settings.get_difficulty_multiplier())
 
 
 class SpeedPowerUp(PowerUp):
     def __init__(self) -> None:
         super().__init__()
-        self.amount = int(10 * self.settings.get_difficulty_multiplier())
+        self.amount = int(10 * self.game_settings.get_difficulty_multiplier())
 
 
 class FireRatePowerUp(PowerUp):
     def __init__(self) -> None:
         super().__init__()
-        self.amount = int(10 * self.settings.get_difficulty_multiplier())
+        self.amount = int(10 * self.game_settings.get_difficulty_multiplier())
 

@@ -1,4 +1,4 @@
-from pygame.sprite import _Group, Sprite
+from pygame.sprite import Group, Sprite
 
 
 class EnemyManager:

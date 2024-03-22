@@ -1,6 +1,6 @@
-from pygame.sprite import _Group, Sprite
+from pygame.sprite import Group, Sprite
 class Guns:
-    def __init__(self) -> None:
+    def __init__(self,game) -> None:
         pass
 
 
