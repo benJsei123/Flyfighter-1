@@ -101,12 +101,10 @@ class Player(pg.sprite.Sprite):
         self.rect.x += self.direction.x * self.player_stats.speed
         self.rect.y += self.direction.y * self.player_stats.speed
 
-        #self.draw()
+        self.draw()
 
     def draw(self):
-        
         self.screen.blit(self.image, self.rect)
-
 
     def handle_input(self, event):
         """handle input and set direction"""

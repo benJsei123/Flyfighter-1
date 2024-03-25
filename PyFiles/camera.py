@@ -62,8 +62,9 @@ class CameraGroup(pygame.sprite.Group):
         self.box_target_camera(target_rect=rect)
 
 
-        background_offset = self.ground_rect.topleft - self.offset
-        self.display_surface.blit(self.ground_surf,background_offset)
+        #For background
+        #background_offset = self.ground_rect.topleft - self.offset
+        #self.display_surface.blit(self.ground_surf,background_offset)
         
         # active elements
         for sprite in sorted(self.sprites(),key = lambda sprite: sprite.rect.centery):

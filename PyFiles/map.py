@@ -46,7 +46,7 @@ class Map:
             # Erstelle eine Surface für den Hintergrund
         background_surface = pg.Surface(self.game_settings.map_size)
 
-        # Generiere das Hintergrundmuster wie zuvor
+        # si
         tile_size = self.game_settings.small_tile_size
         checkerboard_tile = pg.Surface((tile_size, tile_size))
         checkerboard_tile.fill(pg.Color('white'))

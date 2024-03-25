@@ -15,7 +15,10 @@ class GameSettings:
         self.large_tile_size = 32*6
 
         self.bg_line_color = (230,230,230)
-        self.map_size = (20000,20000)
+        
+        self.map_width = 20000
+        self.map_height = 20000
+        self.map_size = (self.map_width,self.map_height)
 
         self.image_paths = {
          "player" : "Resources/pictures/Player_Ship.png",

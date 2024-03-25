@@ -86,19 +86,9 @@ class Game:
                 self.screen.fill(self.game_settings.bg_color)
                 self.camera_group.custom_draw(self.player)
 
-                #self.player.update()
+                self.player.update()
                 
-                
-                #self.screen.blit(self.background_surface, -self.camera_group.offset)
-                #self.camera_group.custom_draw(self.background_surface)
-
                 self.first = False
-                
-                
-                
-                
-                # self.screen.fill(self.game_settings.bg_color)
-
                 
 
 
