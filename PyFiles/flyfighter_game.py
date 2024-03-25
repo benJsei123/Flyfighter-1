@@ -7,28 +7,41 @@ from vector import Vector
 import sys
 import time
 from sound import Sound
+from camera import CameraGroup
 
 class Game:
 
     def __init__(self) -> None:
         pg.init()
+        self.clock = pg.time.Clock()
         
-        self.player = Player(game=self)
         self.game_stats = GameStats(game=self)
         self.game_settings = GameSettings(game=self)
+
+        
         
         sw,sh = self.game_settings.screen_width,self.game_settings.screen_height
         self.screen = pg.display.set_mode((sw,sh))
         pg.display.set_caption("FlyFighter")
+        
+        #Requires Player
         self.map = Map(game=self)
         self.background_surface = self.map.background_surface
+        #Requires background surface
+        self.camera_group = CameraGroup(game=self)
+        #Requires camera group
+        self.player = Player(game=self, group=self.camera_group)
         
         self.sound = Sound()
 
-        self.player.init_missing_attributes() #due to order of constructor calls
+        self.map.set_player(self.player)
+        self.player.init_missing_attributes()
 
+     
         self.game_active = False              # MUST be before Button is created
         self.first = True
+
+
 
     def check_events(self):
     
@@ -69,15 +82,31 @@ class Game:
             
             #Use self.game_active = False to interrupt the actual game
             if self.game_active or self.first:
-                self.screen.blit(self.background_surface, (0, 0))
+                self.camera_group.update()
+                self.screen.fill(self.game_settings.bg_color)
+                self.camera_group.custom_draw(self.player)
+
+                #self.player.update()
+                
+                
+                #self.screen.blit(self.background_surface, -self.camera_group.offset)
+                #self.camera_group.custom_draw(self.background_surface)
+
                 self.first = False
-                self.player.update()
+                
+                
+                
                 
                 # self.screen.fill(self.game_settings.bg_color)
-        
+
+                
+
+
+
             
-            pg.display.flip()
-            time.sleep(0.02)
+            pg.display.update()
+            self.clock.tick(60)
+
 
 
 if __name__ == '__main__':

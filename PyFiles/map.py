@@ -9,9 +9,9 @@ class Map:
     def __init__(self, game) -> None:
         self.game = game
         self.screen = game.screen
-        self.player = game.player
         self.game_settings = game.game_settings
         self.background_surface = None
+        self.player = None
         
 
         #Tiles
@@ -27,6 +27,9 @@ class Map:
 
         self.initialize_map()
     
+
+    def set_player(self,player):
+        self.player = player
 
     def initialize_map(self):
         self.gen_background()

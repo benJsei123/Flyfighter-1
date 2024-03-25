@@ -4,14 +4,16 @@ import pygame as pg
 from guns import Guns
 from timer import Timer
 import math 
+from camera import CameraGroup
 
-class Player:
+class Player(pg.sprite.Sprite):
 
     key_velocity = {pg.K_RIGHT: Vector(1, 0), pg.K_LEFT: Vector(-1,  0),
                   pg.K_UP: Vector(0, -1), pg.K_DOWN: Vector(0, 1)}
     
 
-    def __init__(self, game) -> None:
+    def __init__(self, game, group) -> None:
+        super().__init__(group)
         self.game = game
 
         self.direction = Vector(0,0)
@@ -40,6 +42,7 @@ class Player:
         self.screen_rect = None
         self.screen = None
         self.background_surface = None
+        self.camera_group = None
 
 
     def init_missing_attributes(self):
@@ -67,8 +70,27 @@ class Player:
         #TODO implement
     
 
+    def input(self):
+        keys = pg.key.get_pressed()
+        if keys[pg.K_UP]:
+            self.direction.y = -1
+        elif keys[pg.K_DOWN]:
+            self.direction.y = 1
+        else:
+            self.direction.y = 0
+
+        if keys[pg.K_RIGHT]:
+            self.direction.x = 1
+        elif keys[pg.K_LEFT]:
+            self.direction.x = -1
+        else:
+            self.direction.x = 0
+    
+
     def update(self):
         
+        self.input()
+
         if self.direction.magnitude() > 0 and self.direction!=self.last_set_direction:
             #adjusting angle
             self.angle = math.degrees(math.atan2(-self.direction.y, -self.direction.x))
@@ -79,7 +101,7 @@ class Player:
         self.rect.x += self.direction.x * self.player_stats.speed
         self.rect.y += self.direction.y * self.player_stats.speed
 
-        self.draw()
+        #self.draw()
 
     def draw(self):
         
