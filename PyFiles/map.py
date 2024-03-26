@@ -27,8 +27,17 @@ class Map:
         self.enemy_mgr = EnemyManager()
 
 
+
     def set_player(self,player):
         self.player = player
+
+    def update(self):
+
+        for tile in self.tiles:
+            offset = (tile.rect.x - self.player.rect.x, tile.rect.y - self.player.rect.y)
+            kollision = self.player.mask.overlap(tile.mask, offset)
+            print(kollision)
+
 
     def initialize_map(self):
         self.camera_group = self.game.camera_group
@@ -68,10 +77,14 @@ class Map:
         self.background_surface = background_surface
 
 
-
     def gen_initial_map(self):
-        self.tile_blueprints[0].position= (100,100)
+        
+
         self.tile_blueprints[0].add_to_cameragroup()
+        self.tile_blueprints[0].position= (100,100)
+
+
+
         self.tiles.append(self.tile_blueprints[0])
         print("MAP SPAWN GENERATED with ", len(self.tiles) , "tiles created.")
 
@@ -151,6 +164,10 @@ class MapTile(pg.sprite.Sprite):
         
         self.game_settings = self.game.game_settings
         self.image = image
+
+        self.mask =  pg.mask.from_surface(self.image)
+
+
         self.rect = self.image.get_rect(topleft=position)
         self.position = position
         self.entrances = entrances #holds possible connections to other tiles

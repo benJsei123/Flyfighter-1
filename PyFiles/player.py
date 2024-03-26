@@ -40,12 +40,13 @@ class Player(pg.sprite.Sprite):
         self.screen_rect = None
         self.screen = None
         self.background_surface = None
+        self.mask = None
         
 
 
     def init_missing_attributes(self):
         self.game_settings = self.game.game_settings
-        self.original_image = pg.image.load(self.game_settings.image_paths["player"]) #stays the same (no rotation)
+        self.original_image = pg.image.load(self.game_settings.image_paths["player"]).convert_alpha() #stays the same (no rotation)
         self.image = self.original_image #this image will be a rotated version of original image
         self.rect = self.image.get_rect()
         self.dying_timer = Timer(
@@ -61,6 +62,7 @@ class Player(pg.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
         self.center_ship()
         self.background_surface = self.game.background_surface
+        self.mask = pg.mask.from_surface(self. original_image) #TODO Consider resetting self.mask = pg.mask.from_surface(self.original_image) after each rotation or movement 
         
 
     def get_tile_standing_on(self)->tuple:

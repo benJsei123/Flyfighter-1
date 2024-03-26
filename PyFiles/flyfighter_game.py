@@ -86,6 +86,7 @@ class Game:
                 self.camera_group.update()
                 self.camera_group.custom_draw(self.player)
                 
+                self.map.update()
                 self.player.update()
                 
                 self.first = False
