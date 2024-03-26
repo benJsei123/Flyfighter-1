@@ -4,7 +4,6 @@ import pygame as pg
 from guns import Guns
 from timer import Timer
 import math 
-from camera import CameraGroup
 
 class Player(pg.sprite.Sprite):
 
@@ -42,7 +41,7 @@ class Player(pg.sprite.Sprite):
         self.screen_rect = None
         self.screen = None
         self.background_surface = None
-        self.camera_group = None
+        
 
 
     def init_missing_attributes(self):
@@ -63,6 +62,7 @@ class Player(pg.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
         self.center_ship()
         self.background_surface = self.game.background_surface
+        
 
     def get_tile_standing_on(self)->tuple:
         """Returns position of tile which player stands on currently"""
@@ -100,11 +100,6 @@ class Player(pg.sprite.Sprite):
         # Aktualisiere die Position des Schiffs
         self.rect.x += self.direction.x * self.player_stats.speed
         self.rect.y += self.direction.y * self.player_stats.speed
-
-        self.draw()
-
-    def draw(self):
-        self.screen.blit(self.image, self.rect)
 
     def handle_input(self, event):
         """handle input and set direction"""

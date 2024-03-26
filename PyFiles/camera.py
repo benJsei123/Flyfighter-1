@@ -15,15 +15,15 @@ class CameraGroup(pygame.sprite.Group):
         self.half_h = self.display_surface.get_size()[1] // 2
 
         # box setup
-        self.camera_borders = {'left': 300, 'right': 300, 'top': 300, 'bottom': 300}
+        self.camera_borders = {'left': 400, 'right': 400, 'top': 300, 'bottom': 300}
         l = self.camera_borders['left']
         t = self.camera_borders['top']
         w = self.display_surface.get_size()[0]  - (self.camera_borders['left'] + self.camera_borders['right'])
         h = self.display_surface.get_size()[1]  - (self.camera_borders['top'] + self.camera_borders['bottom'])
         self.camera_rect = pygame.Rect(l,t,w,h)
 
-        # # ground
-        self.ground_surf = game.background_surface
+        # ground
+        self.ground_surf = pygame.image.load('Resources/pictures/background.jpg').convert_alpha()
         self.ground_rect = self.ground_surf.get_rect(topleft = (0,0))
 
         # camera speed
@@ -41,37 +41,40 @@ class CameraGroup(pygame.sprite.Group):
         self.internal_offset.y = self.internal_surf_size[1] // 2 - self.half_h
 
 
-    def box_target_camera(self,target_rect):
+    def box_target_camera(self,target):
 
-        if target_rect.left < self.camera_rect.left:
-            self.camera_rect.left = target_rect.left
-        if target_rect.right > self.camera_rect.right:
-            self.camera_rect.right = target_rect.right
-        if target_rect.top < self.camera_rect.top:
-            self.camera_rect.top = target_rect.top
-        if target_rect.bottom > self.camera_rect.bottom:
-            self.camera_rect.bottom = target_rect.bottom
+        if target.rect.left < self.camera_rect.left:
+            self.camera_rect.left = target.rect.left
+        if target.rect.right > self.camera_rect.right:
+            self.camera_rect.right = target.rect.right
+        if target.rect.top < self.camera_rect.top:
+            self.camera_rect.top = target.rect.top
+        if target.rect.bottom > self.camera_rect.bottom:
+            self.camera_rect.bottom = target.rect.bottom
 
         self.offset.x = self.camera_rect.left - self.camera_borders['left']
         self.offset.y = self.camera_rect.top - self.camera_borders['top']
+		
+    
+    def custom_draw(self,player):
+
+		# self.center_target_camera(player)
+        self.box_target_camera(player)
+		# self.keyboard_control()
 
 
-    def custom_draw(self,target):
-        rect = target.rect
+        self.internal_surf.fill('#ffffff')
 
-        self.box_target_camera(target_rect=rect)
+		# ground 
+        #ground_offset = self.ground_rect.topleft - self.offset + self.internal_offset
+        #self.internal_surf.blit(self.ground_surf,ground_offset)
 
-
-        #For background
-        #background_offset = self.ground_rect.topleft - self.offset
-        #self.display_surface.blit(self.ground_surf,background_offset)
-        
         # active elements
         for sprite in sorted(self.sprites(),key = lambda sprite: sprite.rect.centery):
             offset_pos = sprite.rect.topleft - self.offset + self.internal_offset
-            #self.internal_surf.blit(sprite.image,offset_pos)
-            self.display_surface.blit(sprite.image,offset_pos)
+            self.internal_surf.blit(sprite.image,offset_pos)
 
-        # scaled_surf = pygame.transform.scale(self.internal_surf,self.internal_surface_size_vector * self.zoom_scale)
-        # scaled_rect = scaled_surf.get_rect(center = (self.half_w,self.half_h))
+        scaled_surf = pygame.transform.scale(self.internal_surf,self.internal_surface_size_vector * self.zoom_scale)
+        scaled_rect = scaled_surf.get_rect(center = (self.half_w,self.half_h))
 
+        self.display_surface.blit(scaled_surf,scaled_rect)

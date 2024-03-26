@@ -5,11 +5,11 @@ class GameSettings:
     def __init__(self, game) -> None:
         self.game = game
         self.game_stats = self.game.game_stats
-        self.screen_width = 32*30
+        self.screen_width = 32*45
         #player size is 80x80
 
-        self.screen_height = 32*20
-        self.bg_color = (50,50,50)
+        self.screen_height = 32*24
+        self.bg_color = (100,100,100)
         self.small_tile_size = 32 #tile for background generation
         self.medium_tile_size = 32*3 #tile size for MapTile Objects
         self.large_tile_size = 32*6

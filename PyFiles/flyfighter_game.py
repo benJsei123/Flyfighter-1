@@ -14,7 +14,8 @@ class Game:
     def __init__(self) -> None:
         pg.init()
         self.clock = pg.time.Clock()
-        
+        pg.event.set_grab(True)
+
         self.game_stats = GameStats(game=self)
         self.game_settings = GameSettings(game=self)
 
@@ -40,7 +41,6 @@ class Game:
      
         self.game_active = False              # MUST be before Button is created
         self.first = True
-
 
 
     def check_events(self):
@@ -79,25 +79,19 @@ class Game:
 
         while not finished:
             self.check_events()    # exits if Cmd-Q on macOS or Ctrl-Q on other OS
-            
             #Use self.game_active = False to interrupt the actual game
             if self.game_active or self.first:
+                self.screen.fill("#ffffff")
                 self.camera_group.update()
-                self.screen.fill(self.game_settings.bg_color)
                 self.camera_group.custom_draw(self.player)
-
+                
                 self.player.update()
                 
                 self.first = False
                 
-
-
-
-            
+        
             pg.display.update()
             self.clock.tick(60)
-
-
 
 if __name__ == '__main__':
   g = Game()
