@@ -18,7 +18,6 @@ class Player(pg.sprite.Sprite):
         self.direction = Vector(0,0)
         self.player_stats = PlayerStats(game = self.game)
         
-
         self.guns = Guns(game=self.game)
         self.firing = False
         
@@ -129,7 +128,7 @@ class PlayerStats:
 
         self.hp = 100
         self.fire_rate = 10 
-        self.speed = 10
+        self.speed = 2
         
     def hp_levelup(self, amnt):
         self.hp += amnt

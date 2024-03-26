@@ -37,6 +37,7 @@ class Game:
 
         self.map.set_player(self.player)
         self.player.init_missing_attributes()
+        self.map.initialize_map()
 
      
         self.game_active = False              # MUST be before Button is created

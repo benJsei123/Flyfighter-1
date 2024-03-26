@@ -12,6 +12,7 @@ class Map:
         self.game_settings = game.game_settings
         self.background_surface = None
         self.player = None
+        self.camera_group = None
         
 
         #Tiles
@@ -25,19 +26,22 @@ class Map:
         self.powerup_mgr = PowerUpManager(game=self.game,tiles=self.tiles, player=self.player) #TODO the tile should be filled or updated at some point!!
         self.enemy_mgr = EnemyManager()
 
-        self.initialize_map()
-    
 
     def set_player(self,player):
         self.player = player
 
     def initialize_map(self):
+        self.camera_group = self.game.camera_group
         self.gen_background()
-        self.gen_initial_map()
         self.create_tile_blueprints()
-        for tile in self.tile_blueprints:
-            print(tile.position)
-            print(tile.entrances)
+        
+        self.gen_initial_map() #create spawn area
+        #TEST
+        # for tile in self.tile_blueprints:
+        #     print(tile.position)
+        #     print(tile.entrances)
+
+
         #TODO: Start sth like a thread here to generate new Tiles all the time
         #TODO use gen_new_tiles() somewhere here
         
@@ -66,7 +70,10 @@ class Map:
 
 
     def gen_initial_map(self):
-        pass
+        self.tile_blueprints[0].position= (100,100)
+        self.tile_blueprints[0].add_to_cameragroup()
+        self.tiles.append(self.tile_blueprints[0])
+        print("MAP SPAWN GENERATED with ", len(self.tiles) , "tiles created.")
 
     def gen_new_tiles(self):
         current_tile_pos = self.player.get_tile_standing_on()
@@ -84,7 +91,18 @@ class Map:
 
             entrances = self.check_entrances(tile_image)
             
-            self.tile_blueprints.append(MapTile(game=self.game,image=tile_image, position=(num,num),possible_spawns=[], entrances=entrances, powerup_mgr=self.powerup_mgr, enemy_mgr=self.enemy_mgr))
+            self.tile_blueprints.append(
+                MapTile(
+                    game=self.game,
+                    image=tile_image, 
+                    position=(num,num),
+                    possible_spawns=[], 
+                    entrances=entrances, 
+                    powerup_mgr=self.powerup_mgr, 
+                    enemy_mgr=self.enemy_mgr,
+                    camera_group = self.camera_group,
+                    is_blueprint=True
+                    ))
             print("MapTile created")
             num +=1
             
@@ -119,18 +137,27 @@ class Map:
         return entrances
 
 
-class MapTile:
-    def __init__(self, game,image, position:tuple, entrances:list,possible_spawns:list, powerup_mgr:PowerUpManager, enemy_mgr:EnemyManager ) -> None:
+class MapTile(pg.sprite.Sprite):
+    def __init__(self, game, image, position:tuple, entrances:list,possible_spawns:list, powerup_mgr:PowerUpManager, enemy_mgr:EnemyManager, camera_group, is_blueprint=False ) -> None:
+        
+        #When I create the blueprints I don't want to add them to my camera group right away
+        if not is_blueprint: 
+            super().__init__(camera_group)
+        else:
+            self.camera_group = camera_group
+        
         self.game = game
+        self.screen = game.screen
+        
         self.game_settings = self.game.game_settings
         self.image = image
+        self.rect = self.image.get_rect(topleft=position)
         self.position = position
         self.entrances = entrances #holds possible connections to other tiles
         self.powerups = [] #filled as soon place_entities called
         self.enemies = [] #filled as soon place_entities called
 
         self.tile_size = self.game_settings.medium_tile_size
-
 
         self.powerup_mgr = powerup_mgr
         self.enemy_mgr = enemy_mgr
@@ -141,8 +168,8 @@ class MapTile:
 
         self.place_entities() # should place some random entities on tile, when instantiated
 
-    def draw(self):
-        pass
+    def add_to_cameragroup(self):
+        super().__init__(self.camera_group)
 
     def place_entities(self):
         """ Places powerups and enemies randomly on possible spawn locations"""
