@@ -38,22 +38,6 @@ class Map:
         player_center = self.player.rect.center
         for tile in self.tiles:
 
-            if tile.rect.collidepoint(player_center):
-                if tile != self.active_tile:
-                    self.active_tile = tile
-                    print(f"Wechsel zu neuem aktiven Tile bei {self.active_tile.rect.topleft}")
-                    # Führe hier zusätzliche Logik aus, z.B. die Generierung von Nachbartiles
-                    if(not tile in self.visited_tiles):
-                        self.visited_tiles.append(tile)
-                break
-            
-            #Keep track of visited tiles and tile the player is on
-            # if pg.sprite.collide_rect(self.player, tile):
-                
-            #     self.active_tile = tile
-                
-            #     if(not tile in self.visited_tiles):
-            #         self.visited_tiles.append(tile)
                     
 
             offset = (tile.rect.x - self.player.rect.x, tile.rect.y - self.player.rect.y)
@@ -66,6 +50,14 @@ class Map:
                 #if no collision, the current pos is valid and therefore stored
                 self.last_player_pos_x = self.player.rect.x
                 self.last_player_pos_y = self.player.rect.y
+        
+            if tile.rect.collidepoint(player_center):
+                if tile != self.active_tile:
+                    self.active_tile = tile
+                    if(not tile in self.visited_tiles):
+                        self.visited_tiles.append(tile)
+                break
+
         
         self.gen_new_tiles()
 
@@ -137,7 +129,7 @@ class Map:
         keys = []
    
         keys = self.active_tile.get_empty_neighbors()
-        print(keys)
+        
         
         if len(keys) > 0:
             print("generating new tiles for positions:" , keys)
@@ -201,9 +193,57 @@ class Map:
                         camera_group=self.camera_group
                     )
                     self.tiles.append(tile)
-                    self.active_tile.add_neighbor(side=key)
+                    
+
+                    self.update_neighbors(tile,side=key)
+                    
+                    
                     print("Map tile nummber ", len(self.tiles) , " created.")
+
+    def update_neighbors(self, new_tile, side):
+        # Aktualisiere das neue Tile als Nachbarn des aktiven Tiles
+        self.active_tile.add_neighbor(new_tile, side)
         
+        # Finde das gegenüberliegende Side, um das neue Tile korrekt zu aktualisieren
+        opposite_side = self.get_opposite_side(side)
+        new_tile.add_neighbor(self.active_tile, opposite_side)
+
+        # Prüfe und aktualisiere umliegende Tiles für das neue Tile
+        for check_side in ['top', 'bottom', 'left', 'right']:
+            neighbor_pos = self.get_neighbor_position(new_tile.rect.topleft, check_side)
+            neighbor_tile = self.find_tile_at_position(neighbor_pos)
+            if neighbor_tile:
+                new_tile.add_neighbor(neighbor_tile, check_side)
+                neighbor_tile.add_neighbor(new_tile, self.get_opposite_side(check_side))
+
+    def get_neighbor_position(self, position, side):
+        # Berechne die Position des Nachbars basierend auf dem Side
+        x, y = position
+        if side == "top":
+            return (x, y - 448)
+        elif side == "bottom":
+            return (x, y + 448)
+        elif side == "left":
+            return (x - 448, y)
+        elif side == "right":
+            return (x + 448, y)
+
+    def find_tile_at_position(self, position):
+        # Finde ein Tile basierend auf einer Position
+        for tile in self.tiles:
+            if tile.rect.topleft == position:
+                return tile
+        return None
+
+
+
+    def get_opposite_side(self,side):
+        if side=="top": return "bottom"
+        if side=="bottom": return "top"
+        if side=="left": return "right"
+        if side=="right": return "left"
+
+
     def find_entrances(self):
         """ Locates and saves entrances for all possible map tile sprites"""
         tile_images = self.load_tile_images()
@@ -292,8 +332,8 @@ class MapTile(pg.sprite.Sprite):
     def get_empty_neighbors(self):
         empty_neighbors = []
         for key,item in self.neighbor_tile_dict.items(): #key top,bottom,left,right. items allNone by de
-                if not item: #if there is no neigbor yet / false
-                    empty_neighbors.append(key)
+            if item == False: #if there is no neigbor yet / false
+                empty_neighbors.append(key)
         
         return empty_neighbors
 
@@ -313,8 +353,8 @@ class MapTile(pg.sprite.Sprite):
             entity.pos = pos #TODO think about positioning: pos is a value on within the tile, but has to be converted to an absolute value that makes sense for the game
 
 
-    def add_neighbor(self, side):
-        self.neighbor_tile_dict[side] = True
+    def add_neighbor(self, tile, side):
+        self.neighbor_tile_dict[side] = tile
 
     def can_connect_perfectly(self, entrances, side="top")->bool:
         """
