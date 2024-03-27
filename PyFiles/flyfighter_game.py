@@ -19,8 +19,6 @@ class Game:
         self.game_stats = GameStats(game=self)
         self.game_settings = GameSettings(game=self)
 
-        
-        
         sw,sh = self.game_settings.screen_width,self.game_settings.screen_height
         self.screen = pg.display.set_mode((sw,sh))
         pg.display.set_caption("FlyFighter")

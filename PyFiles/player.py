@@ -49,6 +49,7 @@ class Player(pg.sprite.Sprite):
         self.original_image = pg.image.load(self.game_settings.image_paths["player"]).convert_alpha() #stays the same (no rotation)
         self.image = self.original_image #this image will be a rotated version of original image
         self.rect = self.image.get_rect()
+        self.rect.center = (600,600)
         self.dying_timer = Timer(
             image_list = self.game_settings.animation_sequences["player_dying"], 
             start_index=0, 

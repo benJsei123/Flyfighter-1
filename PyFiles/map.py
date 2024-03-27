@@ -23,7 +23,7 @@ class Map:
         self.visited_tiles = []
         self.tiles = []
         self.active_tile = None
-
+        self.entrance_dict = {}
 
         self.powerup_mgr = PowerUpManager(game=self.game,tiles=self.tiles, player=self.player) #TODO the tile should be filled or updated at some point!!
         self.enemy_mgr = EnemyManager()
@@ -50,7 +50,7 @@ class Map:
     def initialize_map(self):
         self.camera_group = self.game.camera_group
         self.gen_background()
-        self.create_tile_blueprints()
+        self.find_entrances()
         
         self.gen_initial_map() #create spawn area
         #TEST
@@ -84,16 +84,34 @@ class Map:
         # Speichere das generierte Surface für späteren Gebrauch
         self.background_surface = background_surface
 
-
     def gen_initial_map(self):
+        #Note that each tile is 448x448
+
+        #Also: Start with tile_9 for spawn (is nice and open)
         
+        #TODO 
+        #1 get tile images
+        #2 set tile_9 to player pos 
+        #3 add tile to camera group
 
-        self.tile_blueprints[0].add_to_cameragroup()
-        self.tile_blueprints[0].position= (100,100)
+        tile_image = self.load_tile_images()[9]
+        entrances = self.entrance_dict["tile_9"]
 
+        tile = MapTile(
+                    game=self.game,
+                    image=tile_image, 
+                    position=(500,180),
+                    possible_spawns=[], 
+                    entrances=entrances, 
+                    powerup_mgr=self.powerup_mgr, 
+                    enemy_mgr=self.enemy_mgr,
+                    camera_group = self.camera_group,
+                    is_blueprint=False
+                    )
+        self.tiles.append(tile)
 
+        print("MapTile created")
 
-        self.tiles.append(self.tile_blueprints[0])
         print("MAP SPAWN GENERATED with ", len(self.tiles) , "tiles created.")
 
     def gen_new_tiles(self):
@@ -103,29 +121,29 @@ class Map:
         #using the chosen tile's "can_connect" method
 
     
-    def create_tile_blueprints(self):
-        """ Creates a bunch of blueprints of tiles to be used by gen_new_tiles and gen_initial_map"""
+    def find_entrances(self):
+        """ Locates and saves entrances for all possible map tile sprites"""
         tile_images = self.load_tile_images()
 
-        num = 1
-        for tile_image in tile_images:
-
+        for number, tile_image in enumerate(tile_images):
             entrances = self.check_entrances(tile_image)
+            self.entrance_dict[f"tile_{number}"] = entrances
+
+        print(self.entrance_dict)
             
-            self.tile_blueprints.append(
-                MapTile(
-                    game=self.game,
-                    image=tile_image, 
-                    position=(num,num),
-                    possible_spawns=[], 
-                    entrances=entrances, 
-                    powerup_mgr=self.powerup_mgr, 
-                    enemy_mgr=self.enemy_mgr,
-                    camera_group = self.camera_group,
-                    is_blueprint=True
-                    ))
-            print("MapTile created")
-            num +=1
+            # tile = MapTile(
+            #         game=self.game,
+            #         image=tile_image, 
+            #         position=(num,num),
+            #         possible_spawns=[], 
+            #         entrances=entrances, 
+            #         powerup_mgr=self.powerup_mgr, 
+            #         enemy_mgr=self.enemy_mgr,
+            #         camera_group = self.camera_group,
+            #         is_blueprint=False
+            #         ))
+            # print("MapTile created")
+            
             
     def load_tile_images(self):
         tile_images = [pg.image.load(path) for path in self.game_settings.tile_image_paths.values()]
@@ -181,8 +199,6 @@ class MapTile(pg.sprite.Sprite):
         self.entrances = entrances #holds possible connections to other tiles
         self.powerups = [] #filled as soon place_entities called
         self.enemies = [] #filled as soon place_entities called
-
-        self.tile_size = self.game_settings.medium_tile_size
 
         self.powerup_mgr = powerup_mgr
         self.enemy_mgr = enemy_mgr
