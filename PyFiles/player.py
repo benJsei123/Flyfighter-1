@@ -99,6 +99,7 @@ class Player(pg.sprite.Sprite):
             self.last_set_direction = self.direction # to make sure to only rotate if really necessary
 
         # Aktualisiere die Position des Schiffs
+        
         self.rect.x += self.direction.x * self.player_stats.speed
         self.rect.y += self.direction.y * self.player_stats.speed
 

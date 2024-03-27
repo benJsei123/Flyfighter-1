@@ -14,6 +14,8 @@ class Map:
         self.player = None
         self.camera_group = None
         
+        self.last_player_pos_x = 0
+        self.last_player_pos_y = 0
 
         #Tiles
         self.tile_blueprints = [] #holds MapTile objects
@@ -27,7 +29,6 @@ class Map:
         self.enemy_mgr = EnemyManager()
 
 
-
     def set_player(self,player):
         self.player = player
 
@@ -35,8 +36,15 @@ class Map:
 
         for tile in self.tiles:
             offset = (tile.rect.x - self.player.rect.x, tile.rect.y - self.player.rect.y)
-            kollision = self.player.mask.overlap(tile.mask, offset)
-            print(kollision)
+            collision = self.player.mask.overlap(tile.mask, offset)
+            if collision: # if collision: set player back to last valid position
+                
+                self.player.rect.x = self.last_player_pos_x
+                self.player.rect.y = self.last_player_pos_y
+            else:
+                #if no collision, the current pos is valid and therefore stored
+                self.last_player_pos_x = self.player.rect.x
+                self.last_player_pos_y = self.player.rect.y
 
 
     def initialize_map(self):
