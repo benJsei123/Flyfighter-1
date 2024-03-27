@@ -132,7 +132,7 @@ class PlayerStats:
 
         self.hp = 100
         self.fire_rate = 10 
-        self.speed = 2
+        self.speed = 10
         
     def hp_levelup(self, amnt):
         self.hp += amnt
