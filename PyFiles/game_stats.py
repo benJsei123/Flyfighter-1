@@ -1,7 +1,8 @@
 class GameStats:
     def __init__(self,game) -> None:
         self.game = game
-        self.player = game.player
+
+        #CAUTION DONT ADD PLAYER 
 
         self.difficulty_level = 1
 

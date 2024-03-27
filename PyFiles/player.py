@@ -5,19 +5,19 @@ from guns import Guns
 from timer import Timer
 import math 
 
-class Player:
+class Player(pg.sprite.Sprite):
 
     key_velocity = {pg.K_RIGHT: Vector(1, 0), pg.K_LEFT: Vector(-1,  0),
                   pg.K_UP: Vector(0, -1), pg.K_DOWN: Vector(0, 1)}
     
 
-    def __init__(self, game) -> None:
+    def __init__(self, game, group) -> None:
+        super().__init__(group)
         self.game = game
 
         self.direction = Vector(0,0)
         self.player_stats = PlayerStats(game = self.game)
         
-
         self.guns = Guns(game=self.game)
         self.firing = False
         
@@ -40,13 +40,16 @@ class Player:
         self.screen_rect = None
         self.screen = None
         self.background_surface = None
+        self.mask = None
+        
 
 
     def init_missing_attributes(self):
         self.game_settings = self.game.game_settings
-        self.original_image = pg.image.load(self.game_settings.image_paths["player"]) #stays the same (no rotation)
+        self.original_image = pg.image.load(self.game_settings.image_paths["player"]).convert_alpha() #stays the same (no rotation)
         self.image = self.original_image #this image will be a rotated version of original image
         self.rect = self.image.get_rect()
+        self.rect.center = (600,600)
         self.dying_timer = Timer(
             image_list = self.game_settings.animation_sequences["player_dying"], 
             start_index=0, 
@@ -60,6 +63,8 @@ class Player:
         self.screen_rect = self.screen.get_rect()
         self.center_ship()
         self.background_surface = self.game.background_surface
+        self.mask = pg.mask.from_surface(self. original_image) #TODO Consider resetting self.mask = pg.mask.from_surface(self.original_image) after each rotation or movement 
+        
 
     def get_tile_standing_on(self)->tuple:
         """Returns position of tile which player stands on currently"""
@@ -67,8 +72,27 @@ class Player:
         #TODO implement
     
 
+    def input(self):
+        keys = pg.key.get_pressed()
+        if keys[pg.K_UP]:
+            self.direction.y = -1
+        elif keys[pg.K_DOWN]:
+            self.direction.y = 1
+        else:
+            self.direction.y = 0
+
+        if keys[pg.K_RIGHT]:
+            self.direction.x = 1
+        elif keys[pg.K_LEFT]:
+            self.direction.x = -1
+        else:
+            self.direction.x = 0
+    
+
     def update(self):
         
+        self.input()
+
         if self.direction.magnitude() > 0 and self.direction!=self.last_set_direction:
             #adjusting angle
             self.angle = math.degrees(math.atan2(-self.direction.y, -self.direction.x))
@@ -76,15 +100,9 @@ class Player:
             self.last_set_direction = self.direction # to make sure to only rotate if really necessary
 
         # Aktualisiere die Position des Schiffs
+        
         self.rect.x += self.direction.x * self.player_stats.speed
         self.rect.y += self.direction.y * self.player_stats.speed
-
-        self.draw()
-
-    def draw(self):
-        
-        self.screen.blit(self.image, self.rect)
-
 
     def handle_input(self, event):
         """handle input and set direction"""
