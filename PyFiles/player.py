@@ -18,7 +18,7 @@ class Player(pg.sprite.Sprite):
         self.direction = Vector(0,0)
         self.player_stats = PlayerStats(game = self.game)
         
-        self.guns = Guns(game=self.game)
+        self.guns = Guns(game=self.game, v=(0,0),owner=self)
         self.firing = False
         
         #Animation stuff
@@ -34,6 +34,7 @@ class Player(pg.sprite.Sprite):
         self.image = None
         self.sound = None
         self.rect = None
+        self.bullet_start_rect = None
         self.game_settings = None
         self.timer = None
         self.map = None
@@ -50,6 +51,7 @@ class Player(pg.sprite.Sprite):
         self.image = self.original_image #this image will be a rotated version of original image
         self.rect = self.image.get_rect()
         self.rect.center = (600,600)
+        self.bullet_start_rect = self.rect #TODO maybe adjust this
         self.dying_timer = Timer(
             image_list = self.game_settings.animation_sequences["player_dying"], 
             start_index=0, 
@@ -100,9 +102,18 @@ class Player(pg.sprite.Sprite):
             self.last_set_direction = self.direction # to make sure to only rotate if really necessary
 
         # Aktualisiere die Position des Schiffs
-        
+        self.bullet_start_rect = self.rect
         self.rect.x += self.direction.x * self.player_stats.speed
         self.rect.y += self.direction.y * self.player_stats.speed
+
+
+        if self.firing:
+            self.fire()
+        self.guns.update()
+
+    def fire(self):
+        self.guns.add(owner=self,direction=self.last_set_direction)
+
 
     def handle_input(self, event):
         """handle input and set direction"""

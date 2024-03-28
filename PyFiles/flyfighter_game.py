@@ -49,7 +49,7 @@ class Game:
             if type == pg.KEYUP: 
                 key = event.key 
                 if key == pg.K_SPACE: 
-                    pass
+                    self.player.firing=False
                     #self.ship.all_stop()
                 elif key in Player.key_velocity.keys():
                     self.player.handle_input(event) #stop ship?
@@ -57,7 +57,7 @@ class Game:
                 key = event.key
                 
                 if key == pg.K_SPACE: 
-                    print("Space key pressed")
+                    self.player.firing=True
                 elif key in Player.key_velocity: 
                 
                     self.player.handle_input(event)

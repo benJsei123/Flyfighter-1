@@ -24,7 +24,11 @@ class GameSettings:
          "player" : "Resources/pictures/Player_Ship.png",
          "fast_enemy": "",
          "tanky_enemy": "",
-         "smart_enemy": ""
+         "smart_enemy": "",
+         "default_bullet":"Resources/pictures/bullets/default_bullet.png",
+         "shotgun_bullet":"",
+         "laser_bullet":"",
+         "freezer_bullet":"",
         }
 
         self.animation_sequences = {

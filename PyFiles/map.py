@@ -48,7 +48,6 @@ class Map:
 
         #avoid player flying through black pieces
         offset = (self.active_tile.rect.x - self.player.rect.x, self.active_tile.rect.y - self.player.rect.y)
-        print('offset', offset)
         collision = self.player.mask.overlap(self.active_tile.mask, offset)
         if collision: # if collision: set player back to last valid position
             
