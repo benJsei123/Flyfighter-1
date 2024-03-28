@@ -35,22 +35,10 @@ class Map:
         self.player = player
 
     def update(self):
+
+        #Update active tile and visited tiles
         player_center = self.player.rect.center
-        for tile in self.tiles:
-
-                    
-
-            offset = (tile.rect.x - self.player.rect.x, tile.rect.y - self.player.rect.y)
-            collision = self.player.mask.overlap(tile.mask, offset)
-            if collision: # if collision: set player back to last valid position
-                
-                self.player.rect.x = self.last_player_pos_x
-                self.player.rect.y = self.last_player_pos_y
-            else:
-                #if no collision, the current pos is valid and therefore stored
-                self.last_player_pos_x = self.player.rect.x
-                self.last_player_pos_y = self.player.rect.y
-        
+        for tile in self.active_tile.get_neighbors():
             if tile.rect.collidepoint(player_center):
                 if tile != self.active_tile:
                     self.active_tile = tile
@@ -58,28 +46,29 @@ class Map:
                         self.visited_tiles.append(tile)
                 break
 
+        #avoid player flying through black pieces
+        offset = (self.active_tile.rect.x - self.player.rect.x, self.active_tile.rect.y - self.player.rect.y)
+        print('offset', offset)
+        collision = self.player.mask.overlap(self.active_tile.mask, offset)
+        if collision: # if collision: set player back to last valid position
+            
+            self.player.rect.x = self.last_player_pos_x
+            self.player.rect.y = self.last_player_pos_y
+        else:
+            #if no collision, the current pos is valid and therefore stored
+            self.last_player_pos_x = self.player.rect.x
+            self.last_player_pos_y = self.player.rect.y
+
+
         
+   
         self.gen_new_tiles()
-
-        #self.gen_new_tiles()
-
 
     def initialize_map(self):
         self.camera_group = self.game.camera_group
         self.gen_background()
         self.find_entrances()
         self.gen_initial_map() #create spawn area
-        
-        
-        #TEST
-        # for tile in self.tile_blueprints:
-        #     print(tile.position)
-        #     print(tile.entrances)
-
-
-        #TODO: Start sth like a thread here to generate new Tiles all the time
-        #TODO use gen_new_tiles() somewhere here
-        
 
     def gen_background(self):
             # Erstelle eine Surface für den Hintergrund
@@ -128,12 +117,12 @@ class Map:
     def gen_new_tiles(self):
         keys = []
    
-        keys = self.active_tile.get_empty_neighbors()
+        keys = self.active_tile.get_empty_neighbors() #get all directions where tile adding necessary
         
         
         if len(keys) > 0:
-            print("generating new tiles for positions:" , keys)
-            active_tile_pos = self.active_tile.rect.topleft #important for positioning
+            #print("generating new tiles for positions:" , keys)
+            active_tile_pos = self.active_tile.rect.topleft #important for positioning of new tile
             
             for key in keys: #in keys is every key at which the active tile has no neighbur yet
                     
@@ -148,8 +137,8 @@ class Map:
                         position = (active_tile_pos[0]+448 , active_tile_pos[1])
                     
                     
-                    tile_idx = 0
-                    found_match = False
+                    tile_idx = 0 #index to choose from tile set (will be set to random number in range 0-16)
+                    found_match = False #required for levelwise testing if tile fits (first test for two matching entrances, then for one)
 
 
                     #Searching for a matching entrance combination
@@ -193,9 +182,9 @@ class Map:
                         camera_group=self.camera_group
                     )
                     self.tiles.append(tile)
-                    
-
                     self.update_neighbors(tile,side=key)
+                
+
                     
                     
                     print("Map tile nummber ", len(self.tiles) , " created.")
@@ -304,9 +293,6 @@ class MapTile(pg.sprite.Sprite):
         self.game_settings = self.game.game_settings
         self.image = image
 
-        self.mask =  pg.mask.from_surface(self.image)
-
-
         self.neighbor_tile_dict = {
             "top": False,
             "bottom": False,
@@ -328,6 +314,13 @@ class MapTile(pg.sprite.Sprite):
         self.enemies_spawned = False
 
         self.place_entities() # should place some random entities on tile, when instantiated
+        self.mask =  pg.mask.from_surface(self.image)
+        print(self.mask.get_rect().topleft)
+
+
+    def get_neighbors(self):
+        return [i for k, i in self.neighbor_tile_dict.items() if isinstance(i,MapTile)]
+
 
     def get_empty_neighbors(self):
         empty_neighbors = []
