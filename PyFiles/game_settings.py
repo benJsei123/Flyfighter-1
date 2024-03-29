@@ -22,7 +22,7 @@ class GameSettings:
 
 
         #Guns
-        self.bullet_speed = 4
+        self.bullet_speed = 5
 
         self.image_paths = {
          "player" : "Resources/pictures/Player_Ship.png",

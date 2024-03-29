@@ -46,9 +46,32 @@ class Map:
                         self.visited_tiles.append(tile)
                 break
 
+        self.check_player_tile_collision()
+        self.check_bullet_tile_colllision()
+   
+        self.gen_new_tiles()
+
+
+    def check_bullet_tile_colllision(self):
+        
+        bullets = self.player.guns.bullet_group
+        if(bullets):
+            tiles_poss_collisions = [self.active_tile]
+            tiles_poss_collisions.extend(list(self.active_tile.get_neighbors()))
+           
+            for bullet in bullets:
+                for tile in tiles_poss_collisions:
+                    offset = (tile.rect.x - bullet.rect.x, tile.rect.y - bullet.rect.y)
+                    collision = bullet.mask.overlap(tile.mask, offset)
+
+                    if collision: # if collision: delete bullet from game
+                        bullet.kill()
+
+    def check_player_tile_collision(self):
         #avoid player flying through black pieces
         offset = (self.active_tile.rect.x - self.player.rect.x, self.active_tile.rect.y - self.player.rect.y)
         collision = self.player.mask.overlap(self.active_tile.mask, offset)
+        
         if collision: # if collision: set player back to last valid position
             
             self.player.rect.x = self.last_player_pos_x
@@ -60,8 +83,6 @@ class Map:
 
 
         
-   
-        self.gen_new_tiles()
 
     def initialize_map(self):
         self.camera_group = self.game.camera_group

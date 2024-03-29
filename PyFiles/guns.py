@@ -58,6 +58,7 @@ class Guns():  # Analog zu Lasers, aber für Bullets
         self.v = v  # bullet velocity, can be up or down
         self.owner = owner  # the object shooting the bullet
         self.bullet_group = pg.sprite.Group()
+        
         self.sound = Sound()  # assuming you have a Sound class for playing bullet sounds
 
     def bulletgroup(self): 
