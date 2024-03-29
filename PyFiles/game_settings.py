@@ -20,11 +20,19 @@ class GameSettings:
         self.map_height = 20000
         self.map_size = (self.map_width,self.map_height)
 
+
+        #Guns
+        self.bullet_speed = 5
+
         self.image_paths = {
          "player" : "Resources/pictures/Player_Ship.png",
          "fast_enemy": "",
          "tanky_enemy": "",
-         "smart_enemy": ""
+         "smart_enemy": "",
+         "default_bullet":"Resources/pictures/bullets/default_bullet.png",
+         "shotgun_bullet":"",
+         "laser_bullet":"",
+         "freezer_bullet":"",
         }
 
         self.animation_sequences = {
