@@ -112,7 +112,8 @@ class Player(pg.sprite.Sprite):
         self.guns.update()
 
     def fire(self):
-        self.guns.add(owner=self,direction=self.last_set_direction)
+        if self.last_set_direction.magnitude() > 0:
+            self.guns.add(owner=self,direction=self.last_set_direction)
 
 
     def handle_input(self, event):
