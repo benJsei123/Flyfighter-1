@@ -1,6 +1,7 @@
 import pygame as pg
 from pygame.sprite import Sprite
 from sound import Sound
+import math
 
 # Import Vector, Timer, Sound nach Bedarf, falls verwendet
 
@@ -11,19 +12,39 @@ class Bullet(Sprite):
         super().__init__(camera_group)
         self.game = game
         self.screen = game.screen
-        self.settings = game.game_settings
-
+        self.game_settings = game.game_settings
 
         #or sort choose from default, shotgun, laser, freezer
-        self.v = v *100 #TODO give this thing a certain multiplyer depending on sort of bullet
+        self.v = v * self.game_settings.bullet_speed #TODO give this thing a certain multiplyer depending on sort of bullet
+        self.angle = 0
+
         self.owner = owner
-        self.image = pg.image.load(self.settings.image_paths[f'{sort}_bullet']) 
+        self.original_image = pg.image.load(self.game_settings.image_paths[f'{sort}_bullet']).convert_alpha() 
+        self.image = self.original_image #this image will be a rotated version of original image
+
 
         self.rect = owner.bullet_start_rect
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
+
+        self.angle = math.degrees(math.atan2(-self.v.y, -self.v.x))
+        self.rotate() #rotates considering the newly set angle
+
+
+        #For collisions with tiles
+        self.mask = pg.mask.from_surface(self. original_image)
+
+    def rotate(self):
+        if self.original_image:
+            # Rotiere das Originalbild um den aktuellen Winkel und erzeuge ein neues Bild
+            self.image = pg.transform.rotate(self.original_image, -self.angle)  # Negativer Winkel für die Pygame-Koordinaten
+            self.rect = self.image.get_rect(center=self.rect.center)  # Zentriere das neue Bi
+
+
     def update(self):
+        
+
         self.x += self.v.x
         self.y += self.v.y
         

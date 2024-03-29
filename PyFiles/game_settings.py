@@ -20,6 +20,10 @@ class GameSettings:
         self.map_height = 20000
         self.map_size = (self.map_width,self.map_height)
 
+
+        #Guns
+        self.bullet_speed = 4
+
         self.image_paths = {
          "player" : "Resources/pictures/Player_Ship.png",
          "fast_enemy": "",
