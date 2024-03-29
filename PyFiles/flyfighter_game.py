@@ -34,6 +34,8 @@ class Game:
         self.sound = Sound()
 
         self.map.set_player(self.player)
+        self.map.enemy_mgr.set_player(self.player)
+
         self.player.init_missing_attributes()
         self.map.initialize_map()
 

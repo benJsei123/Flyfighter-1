@@ -28,7 +28,7 @@ class Map:
         self.entrance_dict = {}
 
         self.powerup_mgr = PowerUpManager(game=self.game,tiles=self.tiles, player=self.player) #TODO the tile should be filled or updated at some point!!
-        self.enemy_mgr = EnemyManager()
+        self.enemy_mgr = EnemyManager(game=self.game)
 
 
     def set_player(self,player):
@@ -113,7 +113,7 @@ class Map:
 
     def gen_initial_map(self):
         #Note that each tile is 448x448
-
+        enemy = self.enemy_mgr.get_fast_enemy()
         #Also: Start with tile_9 for spawn (is nice and open)
 
         tile_image = self.load_tile_images()[9]

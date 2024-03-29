@@ -26,9 +26,9 @@ class GameSettings:
 
         self.image_paths = {
          "player" : "Resources/pictures/Player_Ship.png",
-         "fast_enemy": "",
-         "tanky_enemy": "",
-         "smart_enemy": "",
+         "fast_enemy": "Resources/pictures/enemies/fast_enemy.png",
+         "tanky_enemy": "Resources/pictures/enemies/tanky_enemy.png",
+         "smart_enemy": "Resources/pictures/enemies/smart_enemy.png",
          "default_bullet":"Resources/pictures/bullets/default_bullet.png",
          "shotgun_bullet":"",
          "laser_bullet":"",

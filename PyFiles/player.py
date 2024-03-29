@@ -18,7 +18,7 @@ class Player(pg.sprite.Sprite):
         self.direction = Vector(0,0)
         self.player_stats = PlayerStats(game = self.game)
         
-        self.guns = Guns(game=self.game, v=(0,0),owner=self)
+        self.guns = Guns(game=self.game,owner=self)
         self.firing = False
         
         #Animation stuff
