@@ -5,7 +5,6 @@ from enemy_manager import EnemyManager, Enemy
 
 class Map:
     
-
     def __init__(self, game) -> None:
         self.game = game
         self.screen = game.screen
@@ -123,7 +122,6 @@ class Map:
                     game=self.game,
                     image=tile_image, 
                     position=(500,180),
-                    possible_spawns=[], 
                     entrances=entrances, 
                     powerup_mgr=self.powerup_mgr, 
                     enemy_mgr=self.enemy_mgr,
@@ -196,7 +194,6 @@ class Map:
                         image=self.tile_images[tile_idx],
                         position=position,
                         entrances= self.entrance_dict[f"tile_{tile_idx}"],
-                        possible_spawns=[],
                         powerup_mgr= self.powerup_mgr,
                         enemy_mgr= self.enemy_mgr,
                         camera_group=self.camera_group
@@ -272,6 +269,8 @@ class Map:
 
 
     def check_entrances(self,image):
+        """ Used in Map.find_entrances() which sets up the entrance_dict of the Map class. 
+        Map class uses entrance_dict to generate new tiles"""
         # coordinates of possible entrances
         coordinates = {
             "top_left": (120, 1),
@@ -302,10 +301,13 @@ class Map:
                     entrances[key].append(entrance)
         
         return entrances
+    
+
+
 
 
 class MapTile(pg.sprite.Sprite):
-    def __init__(self, game, image, position:tuple, entrances:list,possible_spawns:list, powerup_mgr:PowerUpManager, enemy_mgr:EnemyManager, camera_group ) -> None:
+    def __init__(self, game, image, position:tuple, entrances:list, powerup_mgr:PowerUpManager, enemy_mgr:EnemyManager, camera_group ) -> None:
         super().__init__(camera_group)
         self.game = game
         self.screen = game.screen
@@ -328,8 +330,23 @@ class MapTile(pg.sprite.Sprite):
 
         self.powerup_mgr = powerup_mgr
         self.enemy_mgr = enemy_mgr
-        self.possible_spawn_positions = possible_spawns #holds tuples with possible spawn locations for enemies or PUs
-
+        
+        #Enemies should guard map tile entrances
+        
+        
+        offset = 35 # defines how much towards center enemys are placed
+        self.possible_spawn_positions = {
+            "top_left": (120, 1+offset),
+            "top_right": (330, 1+offset),
+            "right_top": (447-offset, 100),
+            "right_bottom": (447-offset, 330),
+            "bottom_right": (330, 447-offset),
+            "bottom_left": (120, 447-offset),
+            "left_bottom": (1+offset, 330),
+            "left_top": (1+offset, 100)
+        }
+        
+         #has to be tuples
         self.visited = False
         self.enemies_spawned = False
 
@@ -355,15 +372,35 @@ class MapTile(pg.sprite.Sprite):
 
     def place_entities(self):
         """ Places powerups and enemies randomly on possible spawn locations"""
-        for pos in self.possible_spawn_positions:
-            entity = random.choice(self.powerup_mgr.get_random_powerup(), self.enemy_mgr.get_random_enemy())
+        #print('@@@', Map.check_entrances(self.game.map,image=self.image)  ,'@@@')
+        '''
+        {
+            'top': [], 
+            'right': ['right_top'], 
+            'bottom': ['bottom_right', 'bottom_left'], 
+            'left': ['left_bottom', 'left_top']
+        }
+        
+        '''
 
-            if(isinstance(entity, PowerUp)):
-                self.powerups.append(entity)
-            elif(isinstance(entity,Enemy)):
+
+        for pos_name, pos in self.possible_spawn_positions.items():
+            if pos_name in [ entr for entr_list in Map.check_entrances(self=self.game.map,image=self.image).values() for entr in entr_list ]: 
+                # this comprehension makes a single list from a list looking like this: 
+                #[[topleft,topright],[topright,topleft],[topright,bottomright],[topleft,topright],...]
+            
+                entity = self.enemy_mgr.get_random_enemy() 
+                #if(isinstance(entity, PowerUp)):
+                #    self.powerups.append(entity)
+                
                 self.enemies.append(entity)
+                print(pos)
+                print(type(pos))
 
-            entity.pos = pos #TODO think about positioning: pos is a value on within the tile, but has to be converted to an absolute value that makes sense for the game
+                #consider position of tile
+                absolute_position = (self.rect.topleft[0]+pos[0],self.rect.topleft[1]+pos[1] )
+
+                entity.rect.center = absolute_position#TODO think about positioning: pos is a value on within the tile, but has to be converted to an absolute value that makes sense for the game
 
 
     def add_neighbor(self, tile, side):
