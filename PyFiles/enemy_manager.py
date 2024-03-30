@@ -40,6 +40,8 @@ class Enemy(Sprite, ABC):
     def __init__(self, game,camera_group) -> None:
         super().__init__(camera_group)
         self.game = game
+        self.player = game.player
+        self.player_rect = self.game.player.rect
         self.game_settings = game.game_settings
         self.screen = game.screen
         self.rect = None
@@ -51,8 +53,9 @@ class Enemy(Sprite, ABC):
         pass
 
     def get_fire_direction(self):
-        return Vector(1,0) #TODO (1,0) for testing purposes. Get corret direction with vector calc
-        
+        self.player_rect = self.player.rect #update player rect
+        v = Vector(self.player_rect.x-self.rect.x,self.player_rect.y-self.rect.y)/1000 * self.game_settings.enemy_bullet_speed#these vectors are huge, gotta scale them down 
+        return v
         
 class FastEnemy(Enemy):
     def __init__(self, game, camera_group) -> None:
