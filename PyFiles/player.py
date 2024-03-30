@@ -153,3 +153,6 @@ class PlayerStats:
 
     def speed_levelup(self, amnt):
         self.speed += amnt
+
+    def take_damage(self,amnt):
+        self.hp -= amnt

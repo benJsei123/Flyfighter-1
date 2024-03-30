@@ -23,6 +23,7 @@ class EnemyManager:
             self.get_tanky_enemy()
         ]
         random_enemy = random.choice(choice_pool)
+        self.enemy_group.add(random_enemy)
         return random_enemy
         
     def get_fast_enemy(self):

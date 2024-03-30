@@ -30,11 +30,12 @@ class Map:
         self.enemy_mgr = EnemyManager(game=self.game)
 
 
+
     def set_player(self,player):
         self.player = player
 
     def update(self):
-
+    
         #Update active tile and visited tiles
         player_center = self.player.rect.center
         for tile in self.active_tile.get_neighbors():
@@ -48,23 +49,47 @@ class Map:
             #let enemies arround player shoot (randomly)
             will_fire_proba = random.random()
             if will_fire_proba < self.game_settings.enemy_fire_proba_thresh:
-                enemy_to_fire = random.choice(tile.enemies)
-                enemy_to_fire.fire()
+                if len(tile.enemies)>0:
+                    enemy_to_fire = random.choice(tile.enemies)
+                    enemy_to_fire.fire()
 
         self.check_player_tile_collision()
         self.check_bullet_tile_colllision()
+        self.check_bullet_player_collision()
    
         self.gen_new_tiles()
 
 
+    def check_bullet_player_collision(self):
+        for enemy in self.enemy_mgr.enemy_group:
+            collisions = pg.sprite.spritecollide(self.player, enemy.guns.bullet_group, dokill=True)
+        
+        
+            if collisions:
+                self.player.player_stats.take_damage(self.game_settings.enemy_bullet_damage)
+            print(f'HP {self.player.player_stats.hp}')
+
+
     def check_bullet_tile_colllision(self):
         
-        bullets = self.player.guns.bullet_group
-        if(bullets):
-            tiles_poss_collisions = [self.active_tile]
-            tiles_poss_collisions.extend(list(self.active_tile.get_neighbors()))
-           
-            for bullet in bullets:
+        
+        tiles_poss_collisions = [self.active_tile]
+        tiles_poss_collisions.extend(list(self.active_tile.get_neighbors()))
+
+        #BPlayer bullet tile collisions
+        player_bullets = self.player.guns.bullet_group
+        if(player_bullets):
+            for bullet in player_bullets:
+                for tile in tiles_poss_collisions:
+                    offset = (tile.rect.x - bullet.rect.x, tile.rect.y - bullet.rect.y)
+                    collision = bullet.mask.overlap(tile.mask, offset)
+
+                    if collision: # if collision: delete bullet from game
+                        bullet.kill()
+
+        #Enemy bullet tile colllision
+        for enemy in self.enemy_mgr.enemy_group:
+            for bullet in enemy.guns.bullet_group:
                 for tile in tiles_poss_collisions:
                     offset = (tile.rect.x - bullet.rect.x, tile.rect.y - bullet.rect.y)
                     collision = bullet.mask.overlap(tile.mask, offset)
@@ -135,7 +160,7 @@ class Map:
                     )
         self.tiles.append(tile)
         self.active_tile = tile
-        print("Map Spawn created")
+        #print("Map Spawn created")
 
         
     def gen_new_tiles(self):
@@ -210,7 +235,7 @@ class Map:
 
                     
                     
-                    print("Map tile nummber ", len(self.tiles) , " created.")
+                    #print("Map tile nummber ", len(self.tiles) , " created.")
 
     def update_neighbors(self, new_tile, side):
         # Aktualisiere das neue Tile als Nachbarn des aktiven Tiles
@@ -358,7 +383,7 @@ class MapTile(pg.sprite.Sprite):
 
         self.place_entities() # should place some random entities on tile, when instantiated
         self.mask =  pg.mask.from_surface(self.image)
-        print(self.mask.get_rect().topleft)
+        #print(self.mask.get_rect().topleft)
 
 
     def get_neighbors(self):
