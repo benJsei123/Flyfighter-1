@@ -22,6 +22,7 @@ class GameSettings:
 
         #Enemies
         self.enemy_fire_proba_thresh = 0.1 #1 is high difficulty, 0 is no difficulty at all
+        self.enemy_spawn_chance = 0.5
         self.enemy_bullet_speed = 5
         #Guns
         self.bullet_speed = 5

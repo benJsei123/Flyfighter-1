@@ -383,19 +383,19 @@ class MapTile(pg.sprite.Sprite):
             if pos_name in [ entr for entr_list in Map.check_entrances(self=self.game.map,image=self.image).values() for entr in entr_list ]: 
                 # this comprehension makes a single list from a list looking like this: 
                 #[[topleft,topright],[topright,topleft],[topright,bottomright],[topleft,topright],...]
-            
-                entity = self.enemy_mgr.get_random_enemy() 
-                #if(isinstance(entity, PowerUp)):
-                #    self.powerups.append(entity)
                 
-                self.enemies.append(entity)
-                print(pos)
-                print(type(pos))
+                spawn_chance = random.random()
+                if spawn_chance < self.game_settings.enemy_spawn_chance:
+                    entity = self.enemy_mgr.get_random_enemy() 
+                    #if(isinstance(entity, PowerUp)):
+                    #    self.powerups.append(entity)
+                    
+                    self.enemies.append(entity)
+        
+                    #consider position of tile
+                    absolute_position = (self.rect.topleft[0]+pos[0],self.rect.topleft[1]+pos[1] )
 
-                #consider position of tile
-                absolute_position = (self.rect.topleft[0]+pos[0],self.rect.topleft[1]+pos[1] )
-
-                entity.rect.center = absolute_position#TODO think about positioning: pos is a value on within the tile, but has to be converted to an absolute value that makes sense for the game
+                    entity.rect.center = absolute_position#TODO think about positioning: pos is a value on within the tile, but has to be converted to an absolute value that makes sense for the game
 
     def add_neighbor(self, tile, side):
         self.neighbor_tile_dict[side] = tile
