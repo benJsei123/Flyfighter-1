@@ -20,6 +20,8 @@ class GameSettings:
         self.map_height = 20000
         self.map_size = (self.map_width,self.map_height)
 
+        #Enemies
+        self.enemy_fire_proba_thresh = 0.1 #1 is high difficulty, 0 is no difficulty at all
 
         #Guns
         self.bullet_speed = 5

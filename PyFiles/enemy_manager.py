@@ -3,6 +3,7 @@ import pygame as pg
 from abc import ABC, abstractmethod
 from guns import Guns
 import random
+from vector import Vector
 
 class EnemyManager:
     def __init__(self, game) -> None:
@@ -50,7 +51,7 @@ class Enemy(Sprite, ABC):
         pass
 
     def get_fire_direction(self):
-        return (1,0) #TODO (1,0) for testing purposes. Get corret direction with vector calc
+        return Vector(1,0) #TODO (1,0) for testing purposes. Get corret direction with vector calc
         
         
 class FastEnemy(Enemy):

@@ -44,6 +44,12 @@ class Map:
                     if(not tile in self.visited_tiles):
                         self.visited_tiles.append(tile)
                 break
+            
+            #let enemies arround player shoot (randomly)
+            will_fire_proba = random.random()
+            if will_fire_proba < self.game_settings.enemy_fire_proba_thresh:
+                enemy_to_fire = random.choice(tile.enemies)
+                enemy_to_fire.fire()
 
         self.check_player_tile_collision()
         self.check_bullet_tile_colllision()
@@ -358,7 +364,6 @@ class MapTile(pg.sprite.Sprite):
     def get_neighbors(self):
         return [i for k, i in self.neighbor_tile_dict.items() if isinstance(i,MapTile)]
 
-
     def get_empty_neighbors(self):
         empty_neighbors = []
         for key,item in self.neighbor_tile_dict.items(): #key top,bottom,left,right. items allNone by de
@@ -372,16 +377,6 @@ class MapTile(pg.sprite.Sprite):
 
     def place_entities(self):
         """ Places powerups and enemies randomly on possible spawn locations"""
-        #print('@@@', Map.check_entrances(self.game.map,image=self.image)  ,'@@@')
-        '''
-        {
-            'top': [], 
-            'right': ['right_top'], 
-            'bottom': ['bottom_right', 'bottom_left'], 
-            'left': ['left_bottom', 'left_top']
-        }
-        
-        '''
 
 
         for pos_name, pos in self.possible_spawn_positions.items():
@@ -401,7 +396,6 @@ class MapTile(pg.sprite.Sprite):
                 absolute_position = (self.rect.topleft[0]+pos[0],self.rect.topleft[1]+pos[1] )
 
                 entity.rect.center = absolute_position#TODO think about positioning: pos is a value on within the tile, but has to be converted to an absolute value that makes sense for the game
-
 
     def add_neighbor(self, tile, side):
         self.neighbor_tile_dict[side] = tile
@@ -432,10 +426,7 @@ class MapTile(pg.sprite.Sprite):
 
 
         #self.entrances stores all entrances of this tile
-
-        
-    
-    
+  
     def can_connect(self, entrances:dict, side="top")->bool:
         """
         Checks for a connection to other tile that may be imperfect (1 entrance cut off)
