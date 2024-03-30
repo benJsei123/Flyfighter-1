@@ -25,6 +25,9 @@ class GameSettings:
         self.enemy_spawn_chance = 0.5
         self.enemy_bullet_speed = 5
         self.enemy_bullet_damage = 1
+        self.enemy_hp = 10
+        self.tanky_enemy_hp = 90
+
         #Guns
         self.bullet_speed = 5
 

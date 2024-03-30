@@ -44,8 +44,7 @@ class Game:
         self.first = True
 
 
-    def check_events(self):
-    
+    def check_events(self): 
         for event in pg.event.get():
             type = event.type
             if type == pg.KEYUP: 

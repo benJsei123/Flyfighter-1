@@ -1,7 +1,7 @@
 import random
 import pygame as pg
 from powerup_manager import PowerUpManager, PowerUp
-from enemy_manager import EnemyManager, Enemy
+from enemy_manager import EnemyManager, Enemy, TankyEnemy
 
 class Map:
     
@@ -56,18 +56,26 @@ class Map:
         self.check_player_tile_collision()
         self.check_bullet_tile_colllision()
         self.check_bullet_player_collision()
-   
+        self.check_bullet_enemy_collision()
         self.gen_new_tiles()
+
+
+    def check_bullet_enemy_collision(self):
+        
+        for enemy in self.enemy_mgr.enemy_group:
+            collisions = pg.sprite.spritecollide(enemy,self.player.guns.bullet_group,dokill=True)
+            for col in collisions:
+                enemy.take_damage() # + kills enemy if no hp left
+                
 
 
     def check_bullet_player_collision(self):
         for enemy in self.enemy_mgr.enemy_group:
             collisions = pg.sprite.spritecollide(self.player, enemy.guns.bullet_group, dokill=True)
         
-        
             if collisions:
                 self.player.player_stats.take_damage(self.game_settings.enemy_bullet_damage)
-            print(f'HP {self.player.player_stats.hp}')
+            #print(f'HP {self.player.player_stats.hp}')
 
 
     def check_bullet_tile_colllision(self):

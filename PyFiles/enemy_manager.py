@@ -48,6 +48,7 @@ class Enemy(Sprite, ABC):
         self.rect = None
         self.guns = None
         self.fire_direction = None
+        self.hp = game.game_settings.enemy_hp
 
     @abstractmethod
     def fire(self):
@@ -57,6 +58,12 @@ class Enemy(Sprite, ABC):
         self.player_rect = self.player.rect #update player rect
         v = Vector(self.player_rect.x-self.rect.x,self.player_rect.y-self.rect.y)/1000 * self.game_settings.enemy_bullet_speed#these vectors are huge, gotta scale them down 
         return v
+    
+    def take_damage(self):
+        self.hp-=1
+        print(self.hp)
+        if(self.hp <= 0):
+            self.kill()
         
 class FastEnemy(Enemy):
     def __init__(self, game, camera_group) -> None:
@@ -94,12 +101,12 @@ class TankyEnemy(Enemy):
         super().__init__(game=game,camera_group=camera_group)
         self.image = pg.image.load(self.game_settings.image_paths['tanky_enemy'])
         self.rect = self.image.get_rect()
-        
+        self.hp = game.game_settings.tanky_enemy_hp
         self.rect.x = 0
         self.rect.y = 0
 
         self.guns = Guns(game=self.game,owner=self)
-    
+
     def fire(self):
         self.fire_direction = self.get_fire_direction()
         self.guns.add(owner=self,direction=self.fire_direction,sort='default')
