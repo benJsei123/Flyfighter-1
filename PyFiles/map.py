@@ -22,14 +22,13 @@ class Map:
         self.visited_tiles = []
         self.tiles = []
         
-        
         self.active_tile = None
         self.entrance_dict = {}
 
         self.powerup_mgr = PowerUpManager(game=self.game,tiles=self.tiles, player=self.player) #TODO the tile should be filled or updated at some point!!
         self.enemy_mgr = EnemyManager(game=self.game)
 
-
+    
 
     def set_player(self,player):
         self.player = player
@@ -50,9 +49,15 @@ class Map:
             will_fire_proba = random.random()
             if will_fire_proba < self.game_settings.enemy_fire_proba_thresh:
                 if len(tile.enemies)>0:
+                    
                     enemy_to_fire = random.choice(tile.enemies)
-                    enemy_to_fire.fire()
+                    if(enemy_to_fire.guns):
+                        enemy_to_fire.fire()
 
+        self.enemy_mgr.update() #reponsible for smart and fast enemy
+        #TODO avoid enemies passing through tiles
+
+        self.check_enemy_tile_collision()
         self.check_player_tile_collision()
         self.check_bullet_tile_colllision()
         self.check_bullet_player_collision()
@@ -60,14 +65,32 @@ class Map:
         self.gen_new_tiles()
 
 
+    def check_enemy_tile_collision(self):
+        for enemy in self.enemy_mgr.get_current_enemies():
+            last_enemy_pos_x = enemy.last_enemy_pos_x
+            last_enemy_pos_y = enemy.last_enemy_pos_y
+
+            for tile in self.tiles:
+                offset = (tile.rect.x - enemy.rect.x, tile.rect.y - enemy.rect.y)
+                collision = enemy.mask.overlap(tile.mask, offset)
+
+                if collision:
+                    print('resetted position of ', type(enemy))
+                    enemy.rect.x = last_enemy_pos_x
+                    enemy.rect.y = last_enemy_pos_y
+                else:
+                    enemy.last_enemy_pos_x = enemy.rect.x
+                    enemy.last_enemy_pos_y = enemy.rect.y
+
+
+
     def check_bullet_enemy_collision(self):
         
-        for enemy in self.enemy_mgr.enemy_group:
+        for enemy in self.enemy_mgr.get_current_enemies():
             collisions = pg.sprite.spritecollide(enemy,self.player.guns.bullet_group,dokill=True)
             for col in collisions:
                 enemy.take_damage() # + kills enemy if no hp left
                 
-
 
     def check_bullet_player_collision(self):
         for enemy in self.enemy_mgr.enemy_group:
@@ -79,8 +102,7 @@ class Map:
 
 
     def check_bullet_tile_colllision(self):
-        
-        
+                
         tiles_poss_collisions = [self.active_tile]
         tiles_poss_collisions.extend(list(self.active_tile.get_neighbors()))
 
@@ -151,7 +173,6 @@ class Map:
 
     def gen_initial_map(self):
         #Note that each tile is 448x448
-        enemy = self.enemy_mgr.get_fast_enemy()
         #Also: Start with tile_9 for spawn (is nice and open)
 
         tile_image = self.load_tile_images()[9]
@@ -168,6 +189,7 @@ class Map:
                     )
         self.tiles.append(tile)
         self.active_tile = tile
+        tile.place_entities()
         #print("Map Spawn created")
 
         
@@ -343,8 +365,6 @@ class Map:
     
 
 
-
-
 class MapTile(pg.sprite.Sprite):
     def __init__(self, game, image, position:tuple, entrances:list, powerup_mgr:PowerUpManager, enemy_mgr:EnemyManager, camera_group ) -> None:
         super().__init__(camera_group)
@@ -370,9 +390,7 @@ class MapTile(pg.sprite.Sprite):
         self.powerup_mgr = powerup_mgr
         self.enemy_mgr = enemy_mgr
         
-        #Enemies should guard map tile entrances
-        
-        
+        #Enemies guard map tile entrances (spawn points for enemies)
         offset = 35 # defines how much towards center enemys are placed
         self.possible_spawn_positions = {
             "top_left": (120, 1+offset),
@@ -384,15 +402,22 @@ class MapTile(pg.sprite.Sprite):
             "left_bottom": (1+offset, 330),
             "left_top": (1+offset, 100)
         }
+
+        #Store where entities have been spawned
+        
         
          #has to be tuples
         self.visited = False
         self.enemies_spawned = False
 
-        self.place_entities() # should place some random entities on tile, when instantiated
         self.mask =  pg.mask.from_surface(self.image)
-        #print(self.mask.get_rect().topleft)
+        
+        
+        #self.place_entities() #TODO UNCOMMENT!!! should place some random entities on tile, when instantiated
+        
 
+    def get_enemies(self):
+        return self.enemies
 
     def get_neighbors(self):
         return [i for k, i in self.neighbor_tile_dict.items() if isinstance(i,MapTile)]
@@ -410,25 +435,26 @@ class MapTile(pg.sprite.Sprite):
 
     def place_entities(self):
         """ Places powerups and enemies randomly on possible spawn locations"""
-
-
         for pos_name, pos in self.possible_spawn_positions.items():
-            if pos_name in [ entr for entr_list in Map.check_entrances(self=self.game.map,image=self.image).values() for entr in entr_list ]: 
+            if pos_name in set([ entr for entr_list in Map.check_entrances(self=self.game.map,image=self.image).values() for entr in entr_list ]): 
                 # this comprehension makes a single list from a list looking like this: 
-                #[[topleft,topright],[topright,topleft],[topright,bottomright],[topleft,topright],...]
+                #[[topleft,topright],[right_right,right_left],[bottomright,bottomright],[lefttop,leftright],...]
                 
-                spawn_chance = random.random()
-                if spawn_chance < self.game_settings.enemy_spawn_chance:
-                    entity = self.enemy_mgr.get_random_enemy() 
+                rand_num = random.random()
+                if rand_num < self.game_settings.enemy_spawn_chance:
+                    
+                    absolute_position = (self.rect.topleft[0]+pos[0],self.rect.topleft[1]+pos[1])
+
+                    entity = self.enemy_mgr.get_random_enemy(absolute_position) 
+                    
                     #if(isinstance(entity, PowerUp)):
                     #    self.powerups.append(entity)
                     
                     self.enemies.append(entity)
-        
-                    #consider position of tile
-                    absolute_position = (self.rect.topleft[0]+pos[0],self.rect.topleft[1]+pos[1] )
 
-                    entity.rect.center = absolute_position#TODO think about positioning: pos is a value on within the tile, but has to be converted to an absolute value that makes sense for the game
+        self.enemies_spawned = True
+        
+
 
     def add_neighbor(self, tile, side):
         self.neighbor_tile_dict[side] = tile

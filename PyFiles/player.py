@@ -64,9 +64,8 @@ class Player(pg.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
         self.center_ship()
         self.background_surface = self.game.background_surface
-        self.mask = pg.mask.from_surface(self. original_image) #TODO Consider resetting self.mask = pg.mask.from_surface(self.original_image) after each rotation or movement 
+        self.mask = pg.mask.from_surface(self.original_image) #TODO Consider resetting self.mask = pg.mask.from_surface(self.original_image) after each rotation or movement 
         
-
     def get_tile_standing_on(self)->tuple:
         """Returns position of tile which player stands on currently"""
         return (0,0)

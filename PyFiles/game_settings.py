@@ -26,7 +26,10 @@ class GameSettings:
         self.enemy_bullet_speed = 5
         self.enemy_bullet_damage = 1
         self.enemy_hp = 10
-        self.tanky_enemy_hp = 90
+        
+        self.tanky_enemy_hp = 30
+
+        self.fast_enemy_speed = 2
 
         #Guns
         self.bullet_speed = 5

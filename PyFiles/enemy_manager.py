@@ -12,33 +12,40 @@ class EnemyManager:
         self.player = None
         self.enemy_group = pg.sprite.Group()
         
+    def update(self):
+        for enemy in self.enemy_group:
+            enemy.update()
+
     def set_player(self,player):
         self.player = player
 
-    def get_random_enemy(self):
+    def get_random_enemy(self, pos:tuple):
         """ used to get a random enemy object to let it spawn on a tile (see MapTile class)"""
-        choice_pool = [
-            self.get_fast_enemy(),
-            self.get_smart_enemy(),
-            self.get_tanky_enemy()
-        ]
-        random_enemy = random.choice(choice_pool)
+        
+        rand_num = random.randint(0,2)
+        random_enemy = None
+        if(rand_num==0): random_enemy = self.get_fast_enemy(pos)
+        if(rand_num==1): random_enemy = self.get_fast_enemy(pos)
+        if(rand_num==2): random_enemy = self.get_fast_enemy(pos)
+
         self.enemy_group.add(random_enemy)
         return random_enemy
         
-    def get_fast_enemy(self):
-       return FastEnemy(self.game, self.game.camera_group)
+    def get_fast_enemy(self, pos):
+       return FastEnemy(self.game, self.game.camera_group, pos_x=pos[0], pos_y=pos[1])
 
-    def get_tanky_enemy(self):
-        return TankyEnemy(self.game, self.game.camera_group)
+    def get_tanky_enemy(self, pos):
+        return TankyEnemy(self.game, self.game.camera_group, pos_x=pos[0], pos_y=pos[1])
 
-    def get_smart_enemy(self):
-        return SmartEnemy(self.game, self.game.camera_group)
+    def get_smart_enemy(self, pos):
+        return SmartEnemy(self.game, self.game.camera_group, pos_x=pos[0], pos_y=pos[1])
 
+    def get_current_enemies(self):
+        return self.enemy_group
 
 
 class Enemy(Sprite, ABC):
-    def __init__(self, game,camera_group) -> None:
+    def __init__(self, game,camera_group, pos_x,pos_y) -> None:
         super().__init__(camera_group)
         self.game = game
         self.player = game.player
@@ -49,6 +56,14 @@ class Enemy(Sprite, ABC):
         self.guns = None
         self.fire_direction = None
         self.hp = game.game_settings.enemy_hp
+        self.last_enemy_pos_x = pos_x
+        self.last_enemy_pos_y = pos_y
+        self.start_pos_x = pos_x
+        self.start_pos_y = pos_y
+
+    @abstractmethod
+    def update(self):
+        pass
 
     @abstractmethod
     def fire(self):
@@ -61,54 +76,71 @@ class Enemy(Sprite, ABC):
     
     def take_damage(self):
         self.hp-=1
-        print(self.hp)
         if(self.hp <= 0):
+            self.guns=None
             self.kill()
-        
+
 class FastEnemy(Enemy):
-    def __init__(self, game, camera_group) -> None:
-        super().__init__(game=game,camera_group=camera_group)
+    def __init__(self, game, camera_group, pos_x,pos_y) -> None:
+        super().__init__(game=game,camera_group=camera_group, pos_x=pos_x,pos_y=pos_y)
         self.image = pg.image.load(self.game_settings.image_paths['fast_enemy'])
         self.rect = self.image.get_rect()
         
-        self.rect.x = 0
-        self.rect.y = 0
-
+        self.rect.center=(self.start_pos_x,self.start_pos_y)
+        
         self.guns = Guns(game=self.game,owner=self)
-    
+        self.mask = pg.mask.from_surface(self.image)
+        
+    def move_to_player(self):
+        dir = self.get_fire_direction()
+        new_pos =  (self.rect.center[0] + dir.x * self.game_settings.fast_enemy_speed, self.rect.center[1] + dir.y  * self.game_settings.fast_enemy_speed)
+        self.rect.center = new_pos
+        
+
+    def update(self):
+        self.move_to_player()
+        
     def fire(self):
         self.fire_direction = self.get_fire_direction()
         self.guns.add(owner=self,direction=self.fire_direction,sort='default')
 
 class SmartEnemy(Enemy):
-    def __init__(self, game, camera_group) -> None:
-        super().__init__(game=game,camera_group=camera_group)
+    def __init__(self, game, camera_group, pos_x,pos_y) -> None:
+        super().__init__(game=game,camera_group=camera_group, pos_x=pos_x,pos_y=pos_y)
         self.image = pg.image.load(self.game_settings.image_paths['smart_enemy'])
         self.rect = self.image.get_rect()
         
-        self.rect.x = 0
-        self.rect.y = 0
+        
+        self.rect.center=(self.start_pos_x,self.start_pos_y)
 
         self.guns = Guns(game=self.game,owner=self)
+        self.mask = pg.mask.from_surface(self. image)
         
     def fire(self):
         self.fire_direction = self.get_fire_direction()
         self.guns.add(owner=self,direction=self.fire_direction,sort='default')
 
+    def update(self):
+        pass #TODO Implement Logic
+
 
 class TankyEnemy(Enemy):
-    def __init__(self, game, camera_group) -> None:
-        super().__init__(game=game,camera_group=camera_group)
+    def __init__(self, game, camera_group, pos_x,pos_y) -> None:
+        super().__init__(game=game,camera_group=camera_group, pos_x=pos_x,pos_y=pos_y)
         self.image = pg.image.load(self.game_settings.image_paths['tanky_enemy'])
         self.rect = self.image.get_rect()
         self.hp = game.game_settings.tanky_enemy_hp
-        self.rect.x = 0
-        self.rect.y = 0
+        
+        self.rect.center=(self.start_pos_x,self.start_pos_y)
 
         self.guns = Guns(game=self.game,owner=self)
+        self.mask = pg.mask.from_surface(self.image)
 
     def fire(self):
         self.fire_direction = self.get_fire_direction()
         self.guns.add(owner=self,direction=self.fire_direction,sort='default')
+
+    def update(self):
+        pass
 
 
