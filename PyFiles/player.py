@@ -178,7 +178,7 @@ class PlayerStats:
         
     def reset(self):
         self.hp = 100 
-        self.speed = 2
+        self.speed = 7
         self.fire_rate = 10  
         
 
