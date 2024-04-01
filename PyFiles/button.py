@@ -54,8 +54,7 @@ class Button:
     self.visible = False
     pg.mouse.set_visible(False)
     self.score_board.prep()
-    self.game.activate()
-    self.game.restart()
+
 
   def prep_text(self): 
     self.notselected_img = self.font.render(self.text, True, self.text_color, self.bg_color)

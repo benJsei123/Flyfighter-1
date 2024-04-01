@@ -42,12 +42,13 @@ class Game:
 
         self.map.set_player(self.player)
         self.map.enemy_mgr.set_player(self.player)
+        self.map.powerup_mgr.set_player(self.player)
 
         self.player.init_missing_attributes()
         self.map.initialize_map()
 
      
-        self.game_active = False              # MUST be before Button is created
+        self.game_active = False
         self.first = True
 
 
@@ -79,6 +80,7 @@ class Game:
         self.first = False
 
     def restart(self):
+        print("Restart called")
         self.screen.fill(self.game_settings.bg_color)
         self.player.reset()
         self.map.reset()

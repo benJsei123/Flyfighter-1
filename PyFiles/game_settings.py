@@ -33,6 +33,12 @@ class GameSettings:
 
         self.fast_enemy_speed = 2
 
+        #Powerups
+        self.hp_powerup_points = 10
+        self.firerate_powerup_points = 10
+        self.damage_powerup_points = 10
+        self.speed_powerup_points = 1
+
         #Guns
         self.bullet_speed = 5
 
@@ -55,7 +61,11 @@ class GameSettings:
             "smart_enemy_dying": "",
             "smart_enemy_idle": glob.glob("Resources/pictures/animations/smart_enemy_idle/*.png"),
             "tanky_enemy_idle": glob.glob("Resources/pictures/animations/tanky_enemy_idle/*.png"),
-            "fast_enemy_idle" : glob.glob("Resources/pictures/animations/fast_enemy_idle/*.png")
+            "fast_enemy_idle" : glob.glob("Resources/pictures/animations/fast_enemy_idle/*.png"),
+            "speed_powerup_idle":glob.glob("Resources/pictures/animations/powerups/speed/*.jpg"),
+            "damage_powerup_idle":glob.glob("Resources/pictures/animations/powerups/damage/*.png"),
+            "firerate_powerup_idle":glob.glob("Resources/pictures/animations/powerups/firerate/*.png"),
+            "hp_powerup_idle":glob.glob("Resources/pictures/animations/powerups/hp/*.png"),
         }
 
         self.tile_image_paths = {f"tile_{num}":f"Resources/pictures/tiles/tile_pic_{num}.png" for num in range(1,17)}

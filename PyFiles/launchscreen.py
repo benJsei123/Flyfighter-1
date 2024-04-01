@@ -127,6 +127,11 @@ class Launchscreen:
                     if b.rect.collidepoint(x, y):
                         print("Button pressed")
                         b.press()
+                        if(self.game.first==False):
+                            print("CHECK") 
+                            self.game.restart()
+
+                        self.game.activate() # HAS TO BE AFTER self.game.restart if statemen !!
                         self.exit_launch_screen()
                         pg.event.clear() #no old events in events
                     
