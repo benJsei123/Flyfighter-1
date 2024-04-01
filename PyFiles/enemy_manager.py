@@ -33,8 +33,9 @@ class EnemyManager:
         return random_enemy
         
     def get_fast_enemy(self, pos):
-       """ Note that fast enemy doesn"t have a Timer because it needs no animation (mves anyways)"""
-       return FastEnemy(self.game, self.game.camera_group, pos_x=pos[0], pos_y=pos[1],idle_timer=None)
+        image_list = [pg.image.load(path) for path in self.game_settings.animation_sequences["fast_enemy_idle"] ]
+        idle_timer = Timer(image_list, start_index=0, delta=15, looponce=False)
+        return FastEnemy(self.game, self.game.camera_group, pos_x=pos[0], pos_y=pos[1],idle_timer=idle_timer)
 
     def get_tanky_enemy(self, pos):
         image_list = [pg.image.load(path) for path in self.game_settings.animation_sequences["tanky_enemy_idle"] ]
@@ -105,7 +106,7 @@ class FastEnemy(Enemy):
 
     def __init__(self, game, camera_group, pos_x,pos_y,idle_timer) -> None:
         super().__init__(game=game,camera_group=camera_group, pos_x=pos_x,pos_y=pos_y,idle_timer=idle_timer)
-        self.image = pg.image.load(self.game_settings.image_paths['fast_enemy'])
+        self.image = self.idle_timer.current_image()
         self.rect = self.image.get_rect()
         
         self.rect.center=(self.start_pos_x,self.start_pos_y)
@@ -126,6 +127,7 @@ class FastEnemy(Enemy):
     
     def update(self):
         self.move_to_player()
+        self.image = self.idle_timer.current_image()
 
     def fire(self):
         self.fire_direction = self.get_fire_direction()

@@ -54,7 +54,8 @@ class GameSettings:
             "tanky_enemy_dying": "",
             "smart_enemy_dying": "",
             "smart_enemy_idle": glob.glob("Resources/pictures/animations/smart_enemy_idle/*.png"),
-            "tanky_enemy_idle": glob.glob("Resources/pictures/animations/tanky_enemy_idle/*.png")
+            "tanky_enemy_idle": glob.glob("Resources/pictures/animations/tanky_enemy_idle/*.png"),
+            "fast_enemy_idle" : glob.glob("Resources/pictures/animations/fast_enemy_idle/*.png")
         }
 
         self.tile_image_paths = {f"tile_{num}":f"Resources/pictures/tiles/tile_pic_{num}.png" for num in range(1,17)}
