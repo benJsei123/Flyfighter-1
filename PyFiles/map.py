@@ -65,6 +65,30 @@ class Map:
         self.check_bullet_enemy_collision()
         self.gen_new_tiles()
 
+    def reset(self):
+        # Entferne alle Tiles und damit verbundene Objekte wie Feinde und Power-ups.
+        for tile in self.tiles:
+            tile.kill()
+
+        # Leere die Listen und Dictionaries, die Kartenobjekte und Zustände speichern.
+        self.tiles.clear()
+        self.visited_tiles.clear()
+        self.entrance_dict.clear()
+
+        # Setze Zähler und Zustandsvariablen zurück.
+        self.visited_tiles_amount = 0
+        self.active_tile = None
+        self.last_player_pos_x = 0
+        self.last_player_pos_y = 0
+
+        # Setze Power-up und Enemy Manager zurück.
+        #self.powerup_mgr.reset()
+        #self.enemy_mgr.reset()
+
+        # Neugenerieren der initialen Map und Setzen der Spielerposition zurück.
+        self.initialize_map()
+        self.set_player(self.game.player)
+
 
     def check_enemy_enemy_collision(self):
         cur_enemies = self.enemy_mgr.get_current_enemies()
@@ -80,7 +104,7 @@ class Map:
                 last_other_enemy_pos_y = other_enemy.last_enemy_pos_y
 
                 if enemy.rect.colliderect(other_enemy.rect):
-                    print('ENEMY ENEMT resetted position of ', type(enemy))
+                    #print('ENEMY  resetted position of ', type(enemy))
                     enemy.rect.x = last_enemy_pos_x
                     enemy.rect.y = last_enemy_pos_y
                     other_enemy.rect.x = last_other_enemy_pos_x

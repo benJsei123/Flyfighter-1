@@ -8,6 +8,8 @@ import sys
 import time
 from sound import Sound
 from camera import CameraGroup
+from launchscreen import Launchscreen
+from scoreboard import Scoreboard
 
 class Game:
 
@@ -18,10 +20,12 @@ class Game:
 
         self.game_stats = GameStats(game=self)
         self.game_settings = GameSettings(game=self)
+        
 
         sw,sh = self.game_settings.screen_width,self.game_settings.screen_height
         self.screen = pg.display.set_mode((sw,sh))
         pg.display.set_caption("FlyFighter")
+        
         
         #Requires Player
         self.map = Map(game=self)
@@ -32,6 +36,9 @@ class Game:
         self.player = Player(game=self, group=self.camera_group)
         
         self.sound = Sound()
+        self.score_board = Scoreboard(game=self)
+        self.launchscreen = Launchscreen(game=self)
+
 
         self.map.set_player(self.player)
         self.map.enemy_mgr.set_player(self.player)
@@ -71,9 +78,19 @@ class Game:
         self.game_active = True
         self.first = False
 
+    def restart(self):
+        self.screen.fill(self.game_settings.bg_color)
+        self.player.reset()
+        self.map.reset()
+        #if(self.first == False): self.launchscreen.show()
+            
+    
+    def game_over(self):
+        self.reset()
+
     def play(self):
-        #self.launchscreen.show()
-        self.activate() #TODO shift this somewhere (e.g. after butotn is pressed to start game, this should be called) 
+        self.launchscreen.show()
+        
         finished = False
         # self.screen.fill(self.game_settings.bg_color)
 
@@ -87,6 +104,7 @@ class Game:
                 
                 self.map.update()
                 self.player.update()
+                self.score_board.update()
                 
                 self.first = False
                 

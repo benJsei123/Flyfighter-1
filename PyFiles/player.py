@@ -66,6 +66,38 @@ class Player(pg.sprite.Sprite):
         self.background_surface = self.game.background_surface
         self.mask = pg.mask.from_surface(self.original_image) #TODO Consider resetting self.mask = pg.mask.from_surface(self.original_image) after each rotation or movement 
         
+
+    def reset(self):
+        # Setze die Spielereigenschaften zurück
+        self.player_stats.reset()  # Oder was auch immer der Startwert sein soll
+       
+        
+        # Setze den Spieler zurück in die Mitte oder einen anderen Startpunkt
+        self.rect.center = (600, 600)  # Oder eine andere spezifische Startposition
+        
+        # Setze die Richtung und den Winkel des Spielers zurück
+        self.direction = Vector(0, 0)
+        self.angle = 0  # Rückkehr zur Ausgangsausrichtung
+        
+        # Stelle das Ursprungsbild und die Maske wieder her
+        self.image = self.original_image
+        self.mask = pg.mask.from_surface(self.original_image)
+        
+        # Wenn es eine Animation oder einen Zustand gibt, der zurückgesetzt werden muss
+        self.isdying = False
+        
+        # Stoppe jegliches Feuern, falls aktiv
+        self.firing = False
+        
+        # Setze Waffen und andere Komponenten zurück, wenn nötig
+        self.guns.reset()  
+        
+        # Positioniere das Schiff im Zentrum des Bildschirms oder an einem anderen Startpunkt
+        self.center_ship()
+
+        # Andere Aktionen, die erforderlich sind, um 
+
+
     def get_tile_standing_on(self)->tuple:
         """Returns position of tile which player stands on currently"""
         return (0,0)
@@ -144,6 +176,13 @@ class PlayerStats:
         self.fire_rate = 10 
         self.speed = 7
         
+    def reset(self):
+        self.hp = 100 
+        self.speed = 2
+        self.fire_rate = 10  
+        
+
+
     def hp_levelup(self, amnt):
         self.hp += amnt
 
