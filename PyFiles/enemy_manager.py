@@ -60,6 +60,7 @@ class Enemy(Sprite, ABC):
         self.last_enemy_pos_y = pos_y
         self.start_pos_x = pos_x
         self.start_pos_y = pos_y
+        self.slowness = 1
 
     @abstractmethod
     def update(self):
@@ -70,9 +71,19 @@ class Enemy(Sprite, ABC):
         pass
 
     def get_fire_direction(self):
+        """Returns vector from to player"""
         self.player_rect = self.player.rect #update player rect
-        v = Vector(self.player_rect.x-self.rect.x,self.player_rect.y-self.rect.y)/1000 * self.game_settings.enemy_bullet_speed#these vectors are huge, gotta scale them down 
+        v = Vector(self.player_rect.x-self.rect.x,self.player_rect.y-self.rect.y)/1000 * self.game_settings.enemy_bullet_speed #these vectors are huge, gotta scale them down 
         return v
+    
+    
+    def slow_down(self):
+        """Function used to slow  down an enemy. Why? The way that enemy-enemy collisions work would
+        make both enemies stop as soon as they collide. Therefore the enemy that isfarther away from 
+        player has to be slowed down to not make the closer one get stuck"""
+        if(self.slowness<10):
+            self.slowness += 1
+
     
     def take_damage(self):
         self.hp-=1
@@ -92,9 +103,15 @@ class FastEnemy(Enemy):
         self.mask = pg.mask.from_surface(self.image)
         
     def move_to_player(self):
-        dir = self.get_fire_direction()
+        dir = self.get_move_direction()
         new_pos =  (self.rect.center[0] + dir.x * self.game_settings.fast_enemy_speed, self.rect.center[1] + dir.y  * self.game_settings.fast_enemy_speed)
         self.rect.center = new_pos
+
+    def get_move_direction(self):
+        """Returns vector from to player"""
+        self.player_rect = self.player.rect #update player rect
+        v = Vector(self.player_rect.x-self.rect.x,self.player_rect.y-self.rect.y)/1000 * self.game_settings.enemy_bullet_speed * (1/self.slowness)#these vectors are huge, gotta scale them down 
+        return v
         
 
     def update(self):

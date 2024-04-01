@@ -58,11 +58,49 @@ class Map:
         #TODO avoid enemies passing through tiles
 
         self.check_enemy_tile_collision()
+        self.check_enemy_enemy_collision()
         self.check_player_tile_collision()
         self.check_bullet_tile_colllision()
         self.check_bullet_player_collision()
         self.check_bullet_enemy_collision()
         self.gen_new_tiles()
+
+
+    def check_enemy_enemy_collision(self):
+        cur_enemies = self.enemy_mgr.get_current_enemies()
+        for enemy in cur_enemies:
+            last_enemy_pos_x = enemy.last_enemy_pos_x
+            last_enemy_pos_y = enemy.last_enemy_pos_y
+
+            for other_enemy in cur_enemies:
+                if other_enemy is enemy:
+                    continue
+
+                last_other_enemy_pos_x = other_enemy.last_enemy_pos_x
+                last_other_enemy_pos_y = other_enemy.last_enemy_pos_y
+
+                if enemy.rect.colliderect(other_enemy.rect):
+                    print('ENEMY ENEMT resetted position of ', type(enemy))
+                    enemy.rect.x = last_enemy_pos_x
+                    enemy.rect.y = last_enemy_pos_y
+                    other_enemy.rect.x = last_other_enemy_pos_x
+                    other_enemy.rect.y = last_other_enemy_pos_y
+
+                    farther_away = None
+                    if enemy.get_fire_direction().magnitude() > other_enemy.get_fire_direction().magnitude():
+                        farther_away = enemy
+                    else:
+                        farther_away = other_enemy
+                    farther_away.slow_down()
+
+                else:
+                    enemy.last_enemy_pos_x = enemy.rect.x
+                    enemy.last_enemy_pos_y = enemy.rect.y
+
+
+                    
+
+                    #TODO slow down enemy that s farther away from player to not make enemies get stuck in each other
 
 
     def check_enemy_tile_collision(self):
@@ -76,11 +114,11 @@ class Map:
 
                 if collision:
                     print('resetted position of ', type(enemy))
+                    enemy.last_enemy_pos_x = last_enemy_pos_x
+                    enemy.last_enemy_pos_y = last_enemy_pos_y
                     enemy.rect.x = last_enemy_pos_x
                     enemy.rect.y = last_enemy_pos_y
-                else:
-                    enemy.last_enemy_pos_x = enemy.rect.x
-                    enemy.last_enemy_pos_y = enemy.rect.y
+
 
 
 
