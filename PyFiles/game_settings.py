@@ -1,4 +1,6 @@
+import glob
 from game_stats import GameStats
+import os
 #from flyfighter_game import Game
 
 class GameSettings:
@@ -45,32 +47,17 @@ class GameSettings:
          "freezer_bullet":"",
         }
 
+
         self.animation_sequences = {
-         "player_dying" : "PATH_TO_PLAYER_IMAGE",
-         "fast_enemy_dying": "",
-         "tanky_enemy_dying": "",
-         "smart_enemy_dying": ""
+            "player_dying": "LIST WITH ANIMATION IMAGE PATHS",
+            "fast_enemy_dying": "",
+            "tanky_enemy_dying": "",
+            "smart_enemy_dying": "",
+            "smart_enemy_idle": glob.glob("Resources/pictures/animations/smart_enemy_idle/*.png"),
+            "tanky_enemy_idle": glob.glob("Resources/pictures/animations/tanky_enemy_idle/*.png")
         }
 
-        self.tile_image_paths = {
-            "tile_1" : "Resources/pictures/tiles/tile_pic_1.png",
-            "tile_2" : "Resources/pictures/tiles/tile_pic_2.png",
-            "tile_3" : "Resources/pictures/tiles/tile_pic_3.png",
-            "tile_4" : "Resources/pictures/tiles/tile_pic_4.png",
-            "tile_5" : "Resources/pictures/tiles/tile_pic_5.png",
-            "tile_6" : "Resources/pictures/tiles/tile_pic_6.png",
-            "tile_7" : "Resources/pictures/tiles/tile_pic_7.png",
-            "tile_8" : "Resources/pictures/tiles/tile_pic_8.png",
-            "tile_9" : "Resources/pictures/tiles/tile_pic_9.png",
-            "tile_10" :"Resources/pictures/tiles/tile_pic_10.png",
-            "tile_11" :"Resources/pictures/tiles/tile_pic_11.png",
-            "tile_12" :"Resources/pictures/tiles/tile_pic_12.png",
-            "tile_13" :"Resources/pictures/tiles/tile_pic_13.png",
-            "tile_14" :"Resources/pictures/tiles/tile_pic_14.png",
-            "tile_15" :"Resources/pictures/tiles/tile_pic_15.png",
-            "tile_16" :"Resources/pictures/tiles/tile_pic_16.png"
-            
-        }
+        self.tile_image_paths = {f"tile_{num}":f"Resources/pictures/tiles/tile_pic_{num}.png" for num in range(1,17)}
         
 
     def get_difficulty_multiplier(self):
