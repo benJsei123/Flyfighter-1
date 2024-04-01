@@ -18,7 +18,7 @@ class Player(pg.sprite.Sprite):
         self.direction = Vector(0,0)
         self.player_stats = PlayerStats(game = self.game)
         
-        self.guns = Guns(game=self.game, v=(0,0),owner=self)
+        self.guns = Guns(game=self.game,owner=self)
         self.firing = False
         
         #Animation stuff
@@ -44,7 +44,6 @@ class Player(pg.sprite.Sprite):
         self.mask = None
         
 
-
     def init_missing_attributes(self):
         self.game_settings = self.game.game_settings
         self.original_image = pg.image.load(self.game_settings.image_paths["player"]).convert_alpha() #stays the same (no rotation)
@@ -65,9 +64,8 @@ class Player(pg.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
         self.center_ship()
         self.background_surface = self.game.background_surface
-        self.mask = pg.mask.from_surface(self. original_image) #TODO Consider resetting self.mask = pg.mask.from_surface(self.original_image) after each rotation or movement 
+        self.mask = pg.mask.from_surface(self.original_image) #TODO Consider resetting self.mask = pg.mask.from_surface(self.original_image) after each rotation or movement 
         
-
     def get_tile_standing_on(self)->tuple:
         """Returns position of tile which player stands on currently"""
         return (0,0)
@@ -144,7 +142,7 @@ class PlayerStats:
 
         self.hp = 100
         self.fire_rate = 10 
-        self.speed = 2.5
+        self.speed = 7
         
     def hp_levelup(self, amnt):
         self.hp += amnt
@@ -154,3 +152,6 @@ class PlayerStats:
 
     def speed_levelup(self, amnt):
         self.speed += amnt
+
+    def take_damage(self,amnt):
+        self.hp -= amnt

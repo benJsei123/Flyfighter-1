@@ -1,4 +1,6 @@
+import glob
 from game_stats import GameStats
+import os
 #from flyfighter_game import Game
 
 class GameSettings:
@@ -20,47 +22,43 @@ class GameSettings:
         self.map_height = 20000
         self.map_size = (self.map_width,self.map_height)
 
+        #Enemies
+        self.enemy_fire_proba_thresh = 0.1 #1 is high difficulty, 0 is no difficulty at all
+        self.enemy_spawn_chance = 0.5
+        self.enemy_bullet_speed = 5
+        self.enemy_bullet_damage = 1
+        self.enemy_hp = 10
+        
+        self.tanky_enemy_hp = 30
+
+        self.fast_enemy_speed = 2
 
         #Guns
         self.bullet_speed = 5
 
         self.image_paths = {
          "player" : "Resources/pictures/Player_Ship.png",
-         "fast_enemy": "",
-         "tanky_enemy": "",
-         "smart_enemy": "",
+         "fast_enemy": "Resources/pictures/enemies/fast_enemy.png",
+         "tanky_enemy": "Resources/pictures/enemies/tanky_enemy.png",
+         "smart_enemy": "Resources/pictures/enemies/smart_enemy.png",
          "default_bullet":"Resources/pictures/bullets/default_bullet.png",
          "shotgun_bullet":"",
          "laser_bullet":"",
          "freezer_bullet":"",
         }
 
+
         self.animation_sequences = {
-         "player_dying" : "PATH_TO_PLAYER_IMAGE",
-         "fast_enemy_dying": "",
-         "tanky_enemy_dying": "",
-         "smart_enemy_dying": ""
+            "player_dying": "LIST WITH ANIMATION IMAGE PATHS",
+            "fast_enemy_dying": "",
+            "tanky_enemy_dying": "",
+            "smart_enemy_dying": "",
+            "smart_enemy_idle": glob.glob("Resources/pictures/animations/smart_enemy_idle/*.png"),
+            "tanky_enemy_idle": glob.glob("Resources/pictures/animations/tanky_enemy_idle/*.png"),
+            "fast_enemy_idle" : glob.glob("Resources/pictures/animations/fast_enemy_idle/*.png")
         }
 
-        self.tile_image_paths = {
-            "tile_1" : "Resources/pictures/tiles/tile_pic_1.png",
-            "tile_2" : "Resources/pictures/tiles/tile_pic_2.png",
-            "tile_3" : "Resources/pictures/tiles/tile_pic_3.png",
-            "tile_4" : "Resources/pictures/tiles/tile_pic_4.png",
-            "tile_5" : "Resources/pictures/tiles/tile_pic_5.png",
-            "tile_6" : "Resources/pictures/tiles/tile_pic_6.png",
-            "tile_7" : "Resources/pictures/tiles/tile_pic_7.png",
-            "tile_8" : "Resources/pictures/tiles/tile_pic_8.png",
-            "tile_9" : "Resources/pictures/tiles/tile_pic_9.png",
-            "tile_10" :"Resources/pictures/tiles/tile_pic_10.png",
-            "tile_11" :"Resources/pictures/tiles/tile_pic_11.png",
-            "tile_12" :"Resources/pictures/tiles/tile_pic_12.png",
-            "tile_13" :"Resources/pictures/tiles/tile_pic_13.png",
-            "tile_14" :"Resources/pictures/tiles/tile_pic_14.png",
-            "tile_15" :"Resources/pictures/tiles/tile_pic_15.png",
-            "tile_16" :"Resources/pictures/tiles/tile_pic_16.png"
-            
-        }
+        self.tile_image_paths = {f"tile_{num}":f"Resources/pictures/tiles/tile_pic_{num}.png" for num in range(1,17)}
         
 
     def get_difficulty_multiplier(self):

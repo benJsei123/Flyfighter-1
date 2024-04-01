@@ -24,23 +24,16 @@ class Bullet(Sprite):
         self.angle = math.degrees(math.atan2(-self.v.y, -self.v.x))
         self.image = pg.transform.rotate(self.original_image, -self.angle)  # Negativer Winkel für die Pygame-Koordinaten
         self.rect = self.image.get_rect(center=owner.rect.center)
-
-
-        #self.rect = owner.bullet_start_rect
+        
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
 
         #For collisions with tiles
         self.mask = pg.mask.from_surface(self. original_image)
-
-
-
-            
+    
 
     def update(self):
-        
-
         self.x += self.v.x
         self.y += self.v.y
         
@@ -49,13 +42,13 @@ class Bullet(Sprite):
 
 
 class Guns():  # Analog zu Lasers, aber für Bullets
-    def __init__(self, game, v, owner):
+    def __init__(self, game, owner):
         self.game = game
         self.screen = game.screen
         self.settings = game.game_settings
         self.camera_group = game.camera_group
         
-        self.v = v  # bullet velocity, can be up or down
+        #self.v = v  # bullet velocity, can be up or down
         self.owner = owner  # the object shooting the bullet
         self.bullet_group = pg.sprite.Group()
         
