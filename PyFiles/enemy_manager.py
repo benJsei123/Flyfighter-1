@@ -25,8 +25,8 @@ class EnemyManager:
         rand_num = random.randint(0,2)
         random_enemy = None
         if(rand_num==0): random_enemy = self.get_fast_enemy(pos)
-        if(rand_num==1): random_enemy = self.get_fast_enemy(pos)
-        if(rand_num==2): random_enemy = self.get_fast_enemy(pos)
+        if(rand_num==1): random_enemy = self.get_tanky_enemy(pos)
+        if(rand_num==2): random_enemy = self.get_smart_enemy(pos)
 
         self.enemy_group.add(random_enemy)
         return random_enemy

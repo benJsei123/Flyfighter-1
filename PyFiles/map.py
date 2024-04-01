@@ -227,7 +227,7 @@ class Map:
                     )
         self.tiles.append(tile)
         self.active_tile = tile
-        tile.place_entities()
+        
         #print("Map Spawn created")
 
         
@@ -451,7 +451,7 @@ class MapTile(pg.sprite.Sprite):
         self.mask =  pg.mask.from_surface(self.image)
         
         
-        #self.place_entities() #TODO UNCOMMENT!!! should place some random entities on tile, when instantiated
+        self.place_entities() # should place some random entities on tile, when instantiated
         
 
     def get_enemies(self):
