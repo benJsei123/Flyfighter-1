@@ -6,12 +6,13 @@ class GameStats:
 
         self.difficulty_level = 1
 
-        self.current_score = 0
+        self.score = 0
+        self.level = 1
         self.high_score = self.load_highscore()
 
     
     def load_highscore(self):
-        pass
+        return 143543500
         #TODO implement
     
     def save_highscore(self):
