@@ -503,17 +503,22 @@ class MapTile(pg.sprite.Sprite):
                 # this comprehension makes a single list from a list looking like this: 
                 #[[topleft,topright],[right_right,right_left],[bottomright,bottomright],[lefttop,leftright],...]
                 
-                rand_num = random.random()
-                if rand_num < self.game_settings.enemy_spawn_chance:
-                    
-                    absolute_position = (self.rect.topleft[0]+pos[0],self.rect.topleft[1]+pos[1])
 
-                    entity = self.enemy_mgr.get_random_enemy(absolute_position) 
+                spawn_entity_val = random.random()
+                if spawn_entity_val < self.game_settings.entity_spawn_chance:
+                    absolute_position = (self.rect.topleft[0]+pos[0],self.rect.topleft[1]+pos[1])
                     
-                    #if(isinstance(entity, PowerUp)):
-                    #    self.powerups.append(entity)
+                    spawn_powerup_val = random.random()
                     
-                    self.enemies.append(entity)
+                    if spawn_powerup_val < self.game_settings.powerup_spawn_chance:
+                        entity = self.powerup_mgr.get_random_powerup(absolute_position) 
+                        self.powerups.append(entity)
+                    else:
+                        entity = self.enemy_mgr.get_random_enemy(absolute_position) 
+                        self.enemies.append(entity)
+                    
+
+                    
 
         self.enemies_spawned = True
         

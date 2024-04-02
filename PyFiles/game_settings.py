@@ -63,7 +63,8 @@ class GameSettings:
 
         #Enemies
         self.enemy_fire_proba_thresh = 0.05 * difficulty_multiplier#1 is high difficulty, 0 is no difficulty at all
-        self.enemy_spawn_chance = 0.2 * difficulty_multiplier
+        self.entity_spawn_chance = 0.2 * difficulty_multiplier
+        self.powerup_spawn_chance = 0.25
         self.enemy_bullet_speed = 5
         self.enemy_bullet_damage = 1
         self.enemy_hp = 10 * difficulty_multiplier
