@@ -66,15 +66,15 @@ class GameSettings:
         self.entity_spawn_chance = 0.2 * difficulty_multiplier
         self.powerup_spawn_chance = 0.25
         self.enemy_bullet_speed = 5
-        self.enemy_bullet_damage = 1
-        self.enemy_hp = 1 * difficulty_multiplier
-        self.tanky_enemy_hp = 5 * difficulty_multiplier
+        self.enemy_bullet_damage = int(difficulty_multiplier) 
+        self.enemy_hp = int(difficulty_multiplier)
+        self.tanky_enemy_hp = int(5 * difficulty_multiplier)
         self.fast_enemy_speed = 2
 
         #Powerups
-        self.hp_powerup_points = 10 + (difficulty_multiplier//0.5)
+        self.hp_powerup_points = 2 + (difficulty_multiplier//0.3)
         self.firerate_powerup_points = 1
-        self.damage_powerup_points = 1 + (difficulty_multiplier//0.5)
+        self.damage_powerup_points = 1
         self.speed_powerup_points = 1
 
         #Guns
