@@ -42,12 +42,12 @@ class Game:
 
         self.map.set_player(self.player)
         self.map.enemy_mgr.set_player(self.player)
-
+        self.map.powerup_mgr.set_player(self.player)
         self.player.init_missing_attributes()
         self.map.initialize_map()
 
      
-        self.game_active = False              # MUST be before Button is created
+        self.game_active = False
         self.first = True
 
 
@@ -79,14 +79,19 @@ class Game:
         self.first = False
 
     def restart(self):
+        print("Restart called")
         self.screen.fill(self.game_settings.bg_color)
         self.player.reset()
         self.map.reset()
-        #if(self.first == False): self.launchscreen.show()
+        self.game_stats.reset()
+        self.game_settings.reset()
+        #self.score_board.reset() #probably not necessary since updates itself anyways all the time
+        if not self.first:
+            self.launchscreen.show()
             
     
     def game_over(self):
-        self.reset()
+        self.restart()
 
     def play(self):
         self.launchscreen.show()

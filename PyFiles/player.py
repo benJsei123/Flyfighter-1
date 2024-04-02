@@ -42,6 +42,7 @@ class Player(pg.sprite.Sprite):
         self.screen = None
         self.background_surface = None
         self.mask = None
+        self.firerate_timer = None
         
 
     def init_missing_attributes(self):
@@ -65,13 +66,15 @@ class Player(pg.sprite.Sprite):
         self.center_ship()
         self.background_surface = self.game.background_surface
         self.mask = pg.mask.from_surface(self.original_image) #TODO Consider resetting self.mask = pg.mask.from_surface(self.original_image) after each rotation or movement 
-        
+        self.idle_timer = Timer(self.game_settings.animation_sequences["player_idle"], delta=6,start_index=0, looponce=False)
+        self.dying_timer = Timer(self.game_settings.animation_sequences["player_dying"], delta=6, start_index=0, looponce=True)
+        self.firerate_timer = Timer(list(range(30)), start_index=0, delta=30, looponce=False)
+
 
     def reset(self):
         # Setze die Spielereigenschaften zurück
         self.player_stats.reset()  # Oder was auch immer der Startwert sein soll
        
-        
         # Setze den Spieler zurück in die Mitte oder einen anderen Startpunkt
         self.rect.center = (600, 600)  # Oder eine andere spezifische Startposition
         
@@ -92,10 +95,11 @@ class Player(pg.sprite.Sprite):
         # Setze Waffen und andere Komponenten zurück, wenn nötig
         self.guns.reset()  
         
+        self.timer = self.idle_timer
+        self.dying_timer = Timer(self.game_settings.animation_sequences["player_dying"], delta=6, start_index=0, looponce=True)
+        self.firerate_timer = Timer(list(range(30)), start_index=0, delta=30, looponce=False)
         # Positioniere das Schiff im Zentrum des Bildschirms oder an einem anderen Startpunkt
         self.center_ship()
-
-        # Andere Aktionen, die erforderlich sind, um 
 
 
     def get_tile_standing_on(self)->tuple:
@@ -122,7 +126,9 @@ class Player(pg.sprite.Sprite):
     
 
     def update(self):
-        
+        if(self.player_stats.hp <= 0):
+            self.explode()
+
         self.input()
 
         if self.direction.magnitude() > 0 and self.direction!=self.last_set_direction:
@@ -133,18 +139,43 @@ class Player(pg.sprite.Sprite):
 
         # Aktualisiere die Position des Schiffs
         self.bullet_start_rect = self.rect
-        self.rect.x += self.direction.x * self.player_stats.speed
-        self.rect.y += self.direction.y * self.player_stats.speed
+        self.rect.x += self.direction.x * (self.player_stats.speed+2)
+        self.rect.y += self.direction.y * (self.player_stats.speed+2)
 
 
+        #Firing and firerate
+        
+        self.firerate_timer.delta = 20 - (self.player_stats.firerate//0.2)
+        if self.firerate_timer.delta < 2: self.firerate_timer.delta = 2
         if self.firing:
-            self.fire()
+            # Prüfen Sie, ob der Timer abgelaufen ist
+            if self.firerate_timer.current_image() == 0:
+                self.fire()
+                # Timer zurücksetzen
+                self.firerate_timer.index = int(self.firerate_timer.delta)
+
+        # Aktualisieren des Timers
+        if self.firerate_timer.index > 0:
+            self.firerate_timer.index -= 1
+
+        #Bullet movement
         self.guns.update()
 
-    def fire(self):
-        if self.last_set_direction.magnitude() > 0:
-            self.guns.add(owner=self,direction=self.last_set_direction)
+        #self.image = self.timer.current_image()
 
+    def fire(self):
+        # Feuerlogik, die abgefeuerte Geschosse hinzufügt
+        if self.last_set_direction.magnitude() > 0:  # avoids shooting "standing" bullets that don't move
+            self.guns.add(owner=self, direction=self.last_set_direction)
+
+
+    def explode(self):
+
+        if not self.isdying: 
+            self.timer = self.dying_timer
+            self.isdying = True
+
+        self.game.game_over()
 
     def handle_input(self, event):
         """handle input and set direction"""
@@ -172,25 +203,28 @@ class PlayerStats:
     def __init__(self, game) -> None:
         self.game = game
 
-        self.hp = 100
-        self.fire_rate = 10 
-        self.speed = 7
+        self.hp = 20
+        self.speed = 1
+        self.firerate = 1
+        self.damage = 1
         
     def reset(self):
-        self.hp = 100 
-        self.speed = 7
-        self.fire_rate = 10  
+        self.hp = 20
+        self.speed = 1
+        self.firerate = 1 
+        self.damage = 1
         
-
-
     def hp_levelup(self, amnt):
-        self.hp += amnt
+        if(self.hp <= 100): self.hp += amnt
 
-    def fire_rate_levelup(self, amnt):
-        self.fire_rate += amnt
+    def firerate_levelup(self, amnt):
+        self.firerate += amnt #limit already set in update() method (checks delta value of fire_timer)
 
     def speed_levelup(self, amnt):
-        self.speed += amnt
+        if(self.speed <= 5): self.speed += amnt
+
+    def damage_levelup(self, amnt):
+        if(self.damage <= 10): self.damage += amnt
 
     def take_damage(self,amnt):
         self.hp -= amnt

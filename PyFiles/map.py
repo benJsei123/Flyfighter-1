@@ -1,7 +1,8 @@
 import random
 import pygame as pg
-from powerup_manager import PowerUpManager, PowerUp
+from powerup_manager import PowerupManager, Powerup
 from enemy_manager import EnemyManager, Enemy, TankyEnemy
+from powerup_manager import PowerupManager
 
 class Map:
     
@@ -9,6 +10,7 @@ class Map:
         self.game = game
         self.screen = game.screen
         self.game_settings = game.game_settings
+        self.game_stats = game.game_stats
         self.background_surface = None
         self.player = None
         self.camera_group = None
@@ -25,7 +27,7 @@ class Map:
         self.active_tile = None
         self.entrance_dict = {}
 
-        self.powerup_mgr = PowerUpManager(game=self.game,tiles=self.tiles, player=self.player) #TODO the tile should be filled or updated at some point!!
+        self.powerup_mgr = PowerupManager(game=self.game) #TODO the tile should be filled or updated at some point!!
         self.enemy_mgr = EnemyManager(game=self.game)
 
     
@@ -54,9 +56,18 @@ class Map:
                     if(enemy_to_fire.guns):
                         enemy_to_fire.fire()
 
-        self.enemy_mgr.update() #reponsible for smart and fast enemy
-        #TODO avoid enemies passing through tiles
 
+        
+        self.visited_tiles_amount = len(self.visited_tiles) #not sure i this be relevant at one point
+        self.game_stats.score = self.visited_tiles_amount
+
+        #Enemies and Powerups
+        self.enemy_mgr.update() #reponsible for smart and fast enemy
+        self.powerup_mgr.update()
+
+
+        #COllsisions
+        self.check_player_powerup_collision()
         self.check_enemy_tile_collision()
         self.check_enemy_enemy_collision()
         self.check_player_tile_collision()
@@ -82,12 +93,19 @@ class Map:
         self.last_player_pos_y = 0
 
         # Setze Power-up und Enemy Manager zurück.
-        #self.powerup_mgr.reset()
-        #self.enemy_mgr.reset()
+        self.powerup_mgr.reset()
+        self.enemy_mgr.reset()
 
         # Neugenerieren der initialen Map und Setzen der Spielerposition zurück.
         self.initialize_map()
         self.set_player(self.game.player)
+
+
+    def check_player_powerup_collision(self):
+        cur_powerups = self.powerup_mgr.get_current_powerups()
+        for pu in cur_powerups:
+            if(self.player.rect.colliderect(pu.rect)):
+                pu.collect()
 
 
     def check_enemy_enemy_collision(self):
@@ -137,7 +155,7 @@ class Map:
                 collision = enemy.mask.overlap(tile.mask, offset)
 
                 if collision:
-                    print('resetted position of ', type(enemy))
+                    #print('resetted position of ', type(enemy))
                     enemy.last_enemy_pos_x = last_enemy_pos_x
                     enemy.last_enemy_pos_y = last_enemy_pos_y
                     enemy.rect.x = last_enemy_pos_x
@@ -208,32 +226,12 @@ class Map:
 
     def initialize_map(self):
         self.camera_group = self.game.camera_group
-        self.gen_background()
         self.find_entrances()
         self.gen_initial_map() #create spawn area
 
-    def gen_background(self):
-            # Erstelle eine Surface für den Hintergrund
-        background_surface = pg.Surface(self.game_settings.map_size)
-
-        # si
-        tile_size = self.game_settings.small_tile_size
-        checkerboard_tile = pg.Surface((tile_size, tile_size))
-        checkerboard_tile.fill(pg.Color('white'))
-        for x in range(0, tile_size, tile_size // 2):
-            pg.draw.line(checkerboard_tile, self.game_settings.bg_line_color, (x, 0), (x, tile_size))
-        for y in range(0, tile_size, tile_size // 2):
-            pg.draw.line(checkerboard_tile, self.game_settings.bg_line_color, (0, y), (tile_size, y))
-
-        # Blit das karierte Muster über den gesamten Hintergrund
-        for x in range(0, self.game_settings.screen_width, tile_size):
-            for y in range(0, self.game_settings.screen_height, tile_size):
-                background_surface.blit(checkerboard_tile, (x, y))
-
-        # Speichere das generierte Surface für späteren Gebrauch
-        self.background_surface = background_surface
 
     def gen_initial_map(self):
+        #self.reset()
         #Note that each tile is 448x448
         #Also: Start with tile_9 for spawn (is nice and open)
 
@@ -251,6 +249,9 @@ class Map:
                     )
         self.tiles.append(tile)
         self.active_tile = tile
+        
+        #Spawning one powerup next to player right away
+        self.powerup_mgr.get_random_powerup((self.player.rect.center[0]+random.randint(60,80),self.player.rect.center[1]+random.randint(60,80)))
         
         #print("Map Spawn created")
 
@@ -428,7 +429,7 @@ class Map:
 
 
 class MapTile(pg.sprite.Sprite):
-    def __init__(self, game, image, position:tuple, entrances:list, powerup_mgr:PowerUpManager, enemy_mgr:EnemyManager, camera_group ) -> None:
+    def __init__(self, game, image, position:tuple, entrances:list, powerup_mgr:PowerupManager, enemy_mgr:EnemyManager, camera_group ) -> None:
         super().__init__(camera_group)
         self.game = game
         self.screen = game.screen
@@ -502,17 +503,22 @@ class MapTile(pg.sprite.Sprite):
                 # this comprehension makes a single list from a list looking like this: 
                 #[[topleft,topright],[right_right,right_left],[bottomright,bottomright],[lefttop,leftright],...]
                 
-                rand_num = random.random()
-                if rand_num < self.game_settings.enemy_spawn_chance:
-                    
-                    absolute_position = (self.rect.topleft[0]+pos[0],self.rect.topleft[1]+pos[1])
 
-                    entity = self.enemy_mgr.get_random_enemy(absolute_position) 
+                spawn_entity_val = random.random()
+                if spawn_entity_val < self.game_settings.entity_spawn_chance:
+                    absolute_position = (self.rect.topleft[0]+pos[0],self.rect.topleft[1]+pos[1])
                     
-                    #if(isinstance(entity, PowerUp)):
-                    #    self.powerups.append(entity)
+                    spawn_powerup_val = random.random()
                     
-                    self.enemies.append(entity)
+                    if spawn_powerup_val < self.game_settings.powerup_spawn_chance:
+                        entity = self.powerup_mgr.get_random_powerup(absolute_position) 
+                        self.powerups.append(entity)
+                    else:
+                        entity = self.enemy_mgr.get_random_enemy(absolute_position) 
+                        self.enemies.append(entity)
+                    
+
+                    
 
         self.enemies_spawned = True
         

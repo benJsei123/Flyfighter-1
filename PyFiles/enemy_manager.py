@@ -49,6 +49,12 @@ class EnemyManager:
 
     def get_current_enemies(self):
         return self.enemy_group
+    
+    def reset(self):
+        for enemy in self.enemy_group:
+            enemy.guns.reset()
+            enemy.kill()
+        self.enemy_group.empty()
 
 
 class Enemy(Sprite, ABC):
@@ -93,10 +99,10 @@ class Enemy(Sprite, ABC):
         if(self.slowness<10):
             self.slowness += 1
 
-    
     def take_damage(self):
-        self.hp-=1
+        self.hp-= self.player.player_stats.damage
         if(self.hp <= 0):
+            if(self.guns):self.guns.reset() #remove bulles 
             self.guns=None
             self.kill()
 
