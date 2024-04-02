@@ -49,6 +49,12 @@ class EnemyManager:
 
     def get_current_enemies(self):
         return self.enemy_group
+    
+    def reset(self):
+        for enemy in self.enemy_group:
+            enemy.guns.reset()
+            enemy.kill()
+        self.enemy_group.empty()
 
 
 class Enemy(Sprite, ABC):

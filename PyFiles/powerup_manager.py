@@ -57,6 +57,8 @@ class PowerupManager:
         return self.powerup_group
     
     def reset(self):
+        for pu in self.pu_group:
+            pu.kill()
         self.pu_group.empty()
 
 

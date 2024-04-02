@@ -10,6 +10,7 @@ class Map:
         self.game = game
         self.screen = game.screen
         self.game_settings = game.game_settings
+        self.game_stats = game.game_stats
         self.background_surface = None
         self.player = None
         self.camera_group = None
@@ -55,9 +56,17 @@ class Map:
                     if(enemy_to_fire.guns):
                         enemy_to_fire.fire()
 
+
+        
+        self.visited_tiles_amount = len(self.visited_tiles) #not sure i this be relevant at one point
+        self.game_stats.score = self.visited_tiles_amount
+
+        #Enemies and Powerups
         self.enemy_mgr.update() #reponsible for smart and fast enemy
         self.powerup_mgr.update()
 
+
+        #COllsisions
         self.check_enemy_tile_collision()
         self.check_enemy_enemy_collision()
         self.check_player_tile_collision()
@@ -84,7 +93,7 @@ class Map:
 
         # Setze Power-up und Enemy Manager zurück.
         self.powerup_mgr.reset()
-        #self.enemy_mgr.reset()
+        self.enemy_mgr.reset()
 
         # Neugenerieren der initialen Map und Setzen der Spielerposition zurück.
         self.initialize_map()

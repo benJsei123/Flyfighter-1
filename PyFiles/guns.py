@@ -69,4 +69,6 @@ class Guns():  # Analog zu Lasers, aber für Bullets
             bullet.update()
 
     def reset(self):
+        for bullet in self.bullet_group:
+            bullet.kill()
         self.bullet_group.empty()

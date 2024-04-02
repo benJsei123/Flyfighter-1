@@ -53,6 +53,8 @@ class Launchscreen:
         self.showing_highscore = False
 
     def show(self):  
+        pg.event.set_grab(False)
+        pg.mouse.set_visible(True)
         self.play_button.show()
         #self.sound.stop_music()
         self.highscore_button.show()  
@@ -76,7 +78,8 @@ class Launchscreen:
             self.highscore_button.update()
             pg.display.flip()
             time.sleep(0.02)
-
+            #print("self.in_launch_screen is ",self.in_launch_screen )
+        print("Launchscreen Loop ended")
 
     def draw_alien_info(self, screen, x, y, image, name, points):
         # Alien-Bild laden und zeichnen
@@ -113,6 +116,7 @@ class Launchscreen:
                 elif type == pg.KEYDOWN:
                     key = event.key
                     if key == pg.K_p: 
+                    
                         self.play_button.select(True)
                         self.play_button.press()
                         self.exit_launch_screen()
@@ -120,20 +124,18 @@ class Launchscreen:
                 elif type == pg.MOUSEBUTTONDOWN:
 
                     x, y = pg.mouse.get_pos()
-                    print(f"mouse_button down at {x}, {y}")
+                    #print(f"mouse_button down at {x}, {y}")
                     #Checking for play button
                     b = self.play_button
                     
                     if b.rect.collidepoint(x, y):
-                        print("Button pressed")
-                        b.press()
-                        if(self.game.first==False):
-                            print("CHECK") 
-                            self.game.restart()
 
+                        print("PLAY Button pressed")
+                        b.press()
                         self.game.activate() # HAS TO BE AFTER self.game.restart if statemen !!
                         self.exit_launch_screen()
                         pg.event.clear() #no old events in events
+                        pg.mouse.set_visible(False)
                     
                     #Checking for highscore button
                     b = self.highscore_button

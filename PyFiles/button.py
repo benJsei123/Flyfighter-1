@@ -52,7 +52,6 @@ class Button:
   def press(self): 
     self.selected = False
     self.visible = False
-    pg.mouse.set_visible(False)
     self.score_board.prep()
 
 
