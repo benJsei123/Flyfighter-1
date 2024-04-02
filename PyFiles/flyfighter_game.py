@@ -21,6 +21,7 @@ class Game:
         self.game_stats = GameStats(game=self)
         self.game_settings = GameSettings(game=self)
         
+        self.fog_effect =  self.get_fog_effect()
 
         sw,sh = self.game_settings.screen_width,self.game_settings.screen_height
         self.screen = pg.display.set_mode((sw,sh))
@@ -96,6 +97,7 @@ class Game:
     def play(self):
         self.launchscreen.show()
         
+       
         finished = False
         # self.screen.fill(self.game_settings.bg_color)
 
@@ -114,8 +116,32 @@ class Game:
                 self.first = False
                 
         
+            self.screen.blit(self.fog_effect, (0, 0))
             pg.display.update()
             self.clock.tick(60)
+
+    def get_fog_effect(self):
+        fog = pg.Surface((self.game_settings.screen_width, self.game_settings.screen_height), pg.SRCALPHA)
+    
+        center_x, center_y = self.game_settings.screen_width // 2, self.game_settings.screen_height // 2
+        
+        rad = 100
+        max_radius = max(center_x+rad, center_y+rad)
+        inner_radius = 10  # Radius des komplett weißen Bereichs in der Mitte
+
+        # Quadratische Funktion für nichtlineare Intensitätszunahme
+        # Diese Funktion erreicht 255 (volle Deckkraft) am Rand des Bildschirms
+        for radius in range(max_radius, 0, -1):
+            if radius > inner_radius:
+                alpha = ((radius - inner_radius) / (max_radius - inner_radius)) ** 7 * 255
+                alpha = max(0, min(255, alpha))  # Stelle sicher, dass alpha zwischen 0 und 255 liegt
+                color = (0, 0, 0, int(alpha))
+                pg.draw.ellipse(fog, color, (center_x - radius, center_y - radius, radius * 2, radius * 2))
+            else:
+                break  # Kein Nebel innerhalb des inneren Radius
+        
+        return fog
+
 
 if __name__ == '__main__':
   g = Game()
