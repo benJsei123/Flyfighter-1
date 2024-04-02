@@ -58,8 +58,8 @@ class GameSettings:
         Is called with each levelup and at game start"""
 
         #Calculate an increasing multiplier to make the game harder (see game stats)
-        difficulty_multiplier = 1 + self.game_stats.difficulty_level/10
-
+        difficulty_multiplier = self.get_difficulty_multiplier()
+        print("Difficultz set to:", difficulty_multiplier)
 
         #Enemies
         self.enemy_fire_proba_thresh = 0.05 * difficulty_multiplier#1 is high difficulty, 0 is no difficulty at all
@@ -67,14 +67,14 @@ class GameSettings:
         self.powerup_spawn_chance = 0.25
         self.enemy_bullet_speed = 5
         self.enemy_bullet_damage = 1
-        self.enemy_hp = 10 * difficulty_multiplier
-        self.tanky_enemy_hp = 30 * difficulty_multiplier
+        self.enemy_hp = 1 * difficulty_multiplier
+        self.tanky_enemy_hp = 5 * difficulty_multiplier
         self.fast_enemy_speed = 2
 
         #Powerups
         self.hp_powerup_points = 10 + (difficulty_multiplier//0.5)
-        self.firerate_powerup_points = 10
-        self.damage_powerup_points = 10 + (difficulty_multiplier//0.5)
+        self.firerate_powerup_points = 1
+        self.damage_powerup_points = 1 + (difficulty_multiplier//0.5)
         self.speed_powerup_points = 1
 
         #Guns
@@ -84,9 +84,9 @@ class GameSettings:
 
     def get_difficulty_multiplier(self):
         """returns a  multiplier that will rise with rising level"""
-        multiplier = 1 + ( self.game_stats.difficulty_level / 10 )
+        difficulty_multiplier = 1 + self.game_stats.difficulty_level/10
         
-        pass
+        return difficulty_multiplier
 
     def reset(self):
         self.initialize_dynamic_settings()

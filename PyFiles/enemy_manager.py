@@ -101,7 +101,7 @@ class Enemy(Sprite, ABC):
 
     
     def take_damage(self):
-        self.hp-=1
+        self.hp-= self.player.player_stats.damage
         if(self.hp <= 0):
             self.guns=None
             self.kill()

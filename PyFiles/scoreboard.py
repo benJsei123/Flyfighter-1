@@ -8,6 +8,7 @@ class Scoreboard:
   def __init__(self, game):
       self.game = game 
       self.screen = game.screen 
+      self.player = game.player
       self.player_stats = game.player.player_stats
       self.screen_rect = game.screen.get_rect() 
       self.game_settings = game.game_settings 
@@ -40,14 +41,28 @@ class Scoreboard:
      self.hp_rect.top += 30
 
      #Speed
-     speed = "SPEED     " + str(int(self.player_stats.speed)).zfill(3) # 3digit stat
+     if(int(self.player_stats.speed)>=5):
+        suffix = "MAX"
+     else:
+        suffix = str(int(self.player_stats.speed)).zfill(3)
+     
+     speed = "SPEED     " + suffix # 3digit stat
+    
+
      self.speed_image = self.font.render(speed, True, self.text_color, self.game_settings.bg_color)
      self.speed_rect = self.score_image.get_rect()
      self.speed_rect.left = self.screen_rect.left + 20
      self.speed_rect.top += 60
 
      #Damage
-     damage = "DAMAGE    " +str(int(self.player_stats.damage)).zfill(3) # 3digit stat
+     if(int(self.player_stats.damage)>=10):
+        suffix = "MAX"
+     else:
+        suffix = str(int(self.player_stats.damage)).zfill(3)
+
+     damage = "DAMAGE    " + suffix# 3digit stat
+
+
      self.damage_image = self.font.render(damage, True, self.text_color, self.game_settings.bg_color)
      self.damage_rect = self.score_image.get_rect()
      self.damage_rect.left = self.screen_rect.left + 20
@@ -55,6 +70,8 @@ class Scoreboard:
 
      #Firerate
      firerate = "FIRERATE  " +str(int(self.player_stats.firerate)).zfill(3) # 3 digit stat
+     if self.player.firerate_timer:
+        if self.player.firerate_timer.delta <= 2: firerate = "FIRERATE  " + "MAX"
      self.firerate_image = self.font.render(firerate, True, self.text_color, self.game_settings.bg_color)
      self.firerate_rect = self.score_image.get_rect()
      self.firerate_rect.left = self.screen_rect.left + 20

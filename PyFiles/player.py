@@ -139,20 +139,20 @@ class Player(pg.sprite.Sprite):
 
         # Aktualisiere die Position des Schiffs
         self.bullet_start_rect = self.rect
-        self.rect.x += self.direction.x * self.player_stats.speed
-        self.rect.y += self.direction.y * self.player_stats.speed
+        self.rect.x += self.direction.x * (self.player_stats.speed+2)
+        self.rect.y += self.direction.y * (self.player_stats.speed+2)
 
 
         #Firing and firerate
         
-        self.firerate_timer.delta = 20 - (self.player_stats.firerate//2)
+        self.firerate_timer.delta = 20 - (self.player_stats.firerate//0.2)
         if self.firerate_timer.delta < 2: self.firerate_timer.delta = 2
         if self.firing:
             # Prüfen Sie, ob der Timer abgelaufen ist
             if self.firerate_timer.current_image() == 0:
                 self.fire()
                 # Timer zurücksetzen
-                self.firerate_timer.index = self.firerate_timer.delta
+                self.firerate_timer.index = int(self.firerate_timer.delta)
 
         # Aktualisieren des Timers
         if self.firerate_timer.index > 0:
@@ -203,25 +203,28 @@ class PlayerStats:
     def __init__(self, game) -> None:
         self.game = game
 
-        self.hp = 100
+        self.hp = 20
+        self.speed = 1
         self.firerate = 1
-        self.speed = 7
         self.damage = 1
         
     def reset(self):
-        self.hp = 100
-        self.speed = 5
-        self.firerate = 0 
-        self.damage = 100 
+        self.hp = 20
+        self.speed = 1
+        self.firerate = 1 
+        self.damage = 1
         
     def hp_levelup(self, amnt):
-        self.hp += amnt
+        if(self.hp <= 100): self.hp += amnt
 
-    def fire_rate_levelup(self, amnt):
-        self.fire_rate += amnt
+    def firerate_levelup(self, amnt):
+        self.firerate += amnt #limit already set in update() method (checks delta value of fire_timer)
 
     def speed_levelup(self, amnt):
-        self.speed += amnt
+        if(self.speed <= 5): self.speed += amnt
+
+    def damage_levelup(self, amnt):
+        if(self.damage <= 10): self.damage += amnt
 
     def take_damage(self,amnt):
         self.hp -= amnt

@@ -101,7 +101,7 @@ class SpeedPowerup(Powerup):
         self.image = self.idle_timer.current_image()
 
     def collect(self):
-        self.game.player.player_stats.speed += self.speed_points
+        self.game.player.player_stats.speed_levelup(self.speed_points) 
         self.kill()
 
 
@@ -119,7 +119,7 @@ class FireratePowerup(Powerup):
         self.image = self.idle_timer.current_image()
 
     def collect(self):
-        self.game.player.player_stats.firerate += self.firerate_points
+        self.game.player.player_stats.firerate_levelup(self.firerate_points) 
         self.kill()
 
 class HP_Powerup(Powerup):
@@ -139,7 +139,7 @@ class HP_Powerup(Powerup):
         self.image = self.idle_timer.current_image()
     
     def collect(self):
-        self.game.player.player_stats.hp += self.hp_points
+        self.game.player.player_stats.hp_levelup(self.hp_points)
         self.kill()
 
 
