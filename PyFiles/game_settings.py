@@ -79,6 +79,7 @@ class GameSettings:
 
         #Guns
         self.bullet_speed = 5
+        self.standard_player_firerate = 20
 
 
     def get_difficulty_multiplier(self):
