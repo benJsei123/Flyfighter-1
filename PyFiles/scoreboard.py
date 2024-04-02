@@ -33,28 +33,28 @@ class Scoreboard:
      self.header_rect.top += 0
   
      #HP
-     hp = "HP        " + str(self.player_stats.hp).zfill(3) # 3 digit stat
+     hp = "HP        " + str(int(self.player_stats.hp)).zfill(3) # 3 digit stat
      self.hp_image = self.font.render(hp, True, self.text_color, self.game_settings.bg_color)
      self.hp_rect = self.score_image.get_rect()
      self.hp_rect.left = self.screen_rect.left + 20
      self.hp_rect.top += 30
 
      #Speed
-     speed = "SPEED     " + str(self.player_stats.speed).zfill(3) # 3digit stat
+     speed = "SPEED     " + str(int(self.player_stats.speed)).zfill(3) # 3digit stat
      self.speed_image = self.font.render(speed, True, self.text_color, self.game_settings.bg_color)
      self.speed_rect = self.score_image.get_rect()
      self.speed_rect.left = self.screen_rect.left + 20
      self.speed_rect.top += 60
 
      #Damage
-     damage = "DAMAGE    " +str(self.player_stats.damage).zfill(3) # 3digit stat
+     damage = "DAMAGE    " +str(int(self.player_stats.damage)).zfill(3) # 3digit stat
      self.damage_image = self.font.render(damage, True, self.text_color, self.game_settings.bg_color)
      self.damage_rect = self.score_image.get_rect()
      self.damage_rect.left = self.screen_rect.left + 20
      self.damage_rect.top += 90
 
      #Firerate
-     firerate = "FIRERATE  " +str(self.player_stats.firerate).zfill(3) # 3 digit stat
+     firerate = "FIRERATE  " +str(int(self.player_stats.firerate)).zfill(3) # 3 digit stat
      self.firerate_image = self.font.render(firerate, True, self.text_color, self.game_settings.bg_color)
      self.firerate_rect = self.score_image.get_rect()
      self.firerate_rect.left = self.screen_rect.left + 20

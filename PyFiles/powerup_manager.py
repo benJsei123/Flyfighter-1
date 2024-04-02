@@ -54,7 +54,7 @@ class PowerupManager:
         return DamagePowerup(self.game, self.game.camera_group, pos_x=pos[0], pos_y=pos[1], idle_timer=idle_timer)
 
     def get_current_powerups(self):
-        return self.powerup_group
+        return self.pu_group
     
     def reset(self):
         for pu in self.pu_group:

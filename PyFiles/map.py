@@ -67,6 +67,7 @@ class Map:
 
 
         #COllsisions
+        self.check_player_powerup_collision()
         self.check_enemy_tile_collision()
         self.check_enemy_enemy_collision()
         self.check_player_tile_collision()
@@ -98,6 +99,13 @@ class Map:
         # Neugenerieren der initialen Map und Setzen der Spielerposition zurück.
         self.initialize_map()
         self.set_player(self.game.player)
+
+
+    def check_player_powerup_collision(self):
+        cur_powerups = self.powerup_mgr.get_current_powerups()
+        for pu in cur_powerups:
+            if(self.player.rect.colliderect(pu.rect)):
+                pu.collect()
 
 
     def check_enemy_enemy_collision(self):
@@ -243,7 +251,7 @@ class Map:
         self.active_tile = tile
         
         #Spawning one powerup next to player right away
-        self.powerup_mgr.get_random_powerup((self.player.rect.center[0]+random.randint(30,50),self.player.rect.center[1]+random.randint(30,50)))
+        self.powerup_mgr.get_random_powerup((self.player.rect.center[0]+random.randint(60,80),self.player.rect.center[1]+random.randint(60,80)))
         
         #print("Map Spawn created")
 

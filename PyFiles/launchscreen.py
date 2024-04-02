@@ -73,7 +73,7 @@ class Launchscreen:
 
             self.screen.blit(self.title_surface_1stline,self.title_rect_1stline)
             self.screen.blit(self.title_surface_2ndline,self.title_rect_2ndline)
-            #self.display_aliens(self.screen)
+
             self.play_button.update()  
             self.highscore_button.update()
             pg.display.flip()
@@ -96,16 +96,7 @@ class Launchscreen:
         # Positionen für Name und Punkte berechnen und zeichnen
         screen.blit(name_surface, (x, y + alien_rect.height + 5))
         screen.blit(points_surface, (x, y + alien_rect.height + 5 + 25 + 5)) #25 is font size of self.info_font
-
-    def display_aliens(self,screen):
-        margin = 90
-        alien_width = 90 
-        start_x = (self.game_settings.screen_width - (len(Alien.images) * alien_width + (len(Alien.images) - 1) * margin)) // 2
-        y = self.game_settings.screen_height - 200 
-
-        for i, (image, name, points) in enumerate(zip(Alien.images, Alien.names, Alien.points)):
-            x = start_x + i * (alien_width + margin)
-            self.draw_alien_info(screen, x, y, image, name, points)      
+    
 
     def check_events(self):
          for event in pg.event.get():
