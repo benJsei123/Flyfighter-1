@@ -5,6 +5,7 @@ from guns import Guns
 import random
 from timer import Timer
 from vector import Vector
+from sound import Sound
 
 class EnemyManager:
     def __init__(self, game) -> None:
@@ -76,6 +77,7 @@ class Enemy(Sprite, ABC):
         self.start_pos_y = pos_y
         self.slowness = 1
         self.idle_timer = idle_timer
+        self.sound = Sound()
 
     @abstractmethod
     def update(self):
@@ -105,6 +107,7 @@ class Enemy(Sprite, ABC):
             if(self.guns):self.guns.reset() #remove bulles 
             self.guns=None
             self.kill()
+            self.sound.play_enemy_dead_sound()
 
 class FastEnemy(Enemy):
 

@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from guns import Guns
 import random
 from timer import Timer
+from sound import Sound
 from vector import Vector
 
 class PowerupManager:
@@ -73,6 +74,7 @@ class Powerup(Sprite, ABC):
         self.game_settings = game.game_settings
         self.screen = game.screen
         self.rect = None
+        self.sound = Sound()
 
         self.start_pos_x = pos_x
         self.start_pos_y = pos_y
@@ -102,6 +104,7 @@ class SpeedPowerup(Powerup):
 
     def collect(self):
         self.game.player.player_stats.speed_levelup(self.speed_points) 
+        self.sound.play_powerup_sound()
         self.kill()
 
 
@@ -120,6 +123,7 @@ class FireratePowerup(Powerup):
 
     def collect(self):
         self.game.player.player_stats.firerate_levelup(self.firerate_points) 
+        self.sound.play_powerup_sound()
         self.kill()
 
 class HP_Powerup(Powerup):
@@ -140,6 +144,7 @@ class HP_Powerup(Powerup):
     
     def collect(self):
         self.game.player.player_stats.hp_levelup(self.hp_points)
+        self.sound.play_powerup_sound()
         self.kill()
 
 
@@ -160,5 +165,6 @@ class DamagePowerup(Powerup):
 
     def collect(self):
         self.game.player.player_stats.damage += self.damage_points
+        self.sound.play_powerup_sound()
         self.kill()
 

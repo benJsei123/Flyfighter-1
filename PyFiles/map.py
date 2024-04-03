@@ -3,6 +3,7 @@ import pygame as pg
 from powerup_manager import PowerupManager, Powerup
 from enemy_manager import EnemyManager, Enemy, TankyEnemy
 from powerup_manager import PowerupManager
+from sound import Sound
 
 class Map:
     
@@ -15,6 +16,7 @@ class Map:
         self.player = None
         self.camera_group = None
         self.tile_images = self.load_tile_images()
+        self.sound = Sound()
         
         self.last_player_pos_x = 0
         self.last_player_pos_y = 0
@@ -45,6 +47,7 @@ class Map:
                     self.active_tile = tile
                     if(not tile in self.visited_tiles):
                         self.visited_tiles.append(tile)
+                        self.sound.play_tile_discovered_sound()
                 break
             
             #let enemies arround player shoot (randomly)

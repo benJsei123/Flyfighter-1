@@ -90,16 +90,18 @@ class Game:
         if not self.first:
             self.launchscreen.show()
             
-    
     def game_over(self):
         self.restart()
 
     def play(self):
+        self.sound.play_launchscreen_theme()
         self.launchscreen.show()
+        self.sound.stop_music()
         
        
         finished = False
         # self.screen.fill(self.game_settings.bg_color)
+        self.sound.play_ambience_music()
 
         while not finished:
             self.check_events()    # exits if Cmd-Q on macOS or Ctrl-Q on other OS
@@ -119,6 +121,8 @@ class Game:
             self.screen.blit(self.fog_effect, (0, 0))
             pg.display.update()
             self.clock.tick(60)
+
+        self.sound.stop_music()
 
     def get_fog_effect(self):
         fog = pg.Surface((self.game_settings.screen_width, self.game_settings.screen_height), pg.SRCALPHA)

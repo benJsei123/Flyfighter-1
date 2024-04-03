@@ -4,6 +4,7 @@ import pygame as pg
 from guns import Guns
 from timer import Timer
 import math 
+from sound import Sound
 
 class Player(pg.sprite.Sprite):
 
@@ -174,15 +175,19 @@ class Player(pg.sprite.Sprite):
         # Feuerlogik, die abgefeuerte Geschosse hinzufügt
         if self.last_set_direction.magnitude() > 0:  # avoids shooting "standing" bullets that don't move
             self.guns.add(owner=self, direction=self.last_set_direction)
+            self.sound.play_bullet_sound()
 
 
     def explode(self):
 
         if self.isdying==False: 
             self.isdying = True
+            self.sound.play_player_explosion_sound()
 
         if(self.dying_timer.finished()):
+            self.sound.play_gameover()
             self.game.game_over()
+
 
     def handle_input(self, event):
         """handle input and set direction"""
@@ -209,6 +214,7 @@ class Player(pg.sprite.Sprite):
 class PlayerStats:
     def __init__(self, game) -> None:
         self.game = game
+        self.sound = Sound()
 
         self.hp = 20
         self.speed = 1
@@ -235,3 +241,4 @@ class PlayerStats:
 
     def take_damage(self,amnt):
         self.hp -= amnt
+        self.sound.play_player_hit_sound()
