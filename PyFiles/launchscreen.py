@@ -44,6 +44,9 @@ class Launchscreen:
 
         #alien pictures
         self.points = [10,20,30]
+
+        #Background
+        #self.bg_image = pg.image.load(self.game_settings.image_paths["background_launchscreen"]).convert_alpha()
         
 
 
@@ -56,7 +59,7 @@ class Launchscreen:
         pg.event.set_grab(False)
         pg.mouse.set_visible(True)
         self.play_button.show()
-        #self.sound.stop_music()
+        
         self.highscore_button.show()  
         self.in_launch_screen = True
         while self.in_launch_screen:
@@ -66,20 +69,21 @@ class Launchscreen:
             
 
             if(self.showing_highscore): 
-                current_highsscore = str(self.game.game_stats.high_score)
+                current_highsscore = str(self.game.game_stats.load_highscore())
                 self.high_score_surface = self.hs_font.render(current_highsscore, True, self.colors["white"])
                 self.current_highscore_rect = self.high_score_surface.get_rect(center=(self.game_settings.screen_width // 2, self.game_settings.screen_height - 230 ))
                 self.screen.blit(self.high_score_surface, self.current_highscore_rect)
 
             self.screen.blit(self.title_surface_1stline,self.title_rect_1stline)
             self.screen.blit(self.title_surface_2ndline,self.title_rect_2ndline)
+            #self.screen.blit(self.bg_image, (0, 0))
 
             self.play_button.update()  
             self.highscore_button.update()
             pg.display.flip()
             time.sleep(0.02)
             #print("self.in_launch_screen is ",self.in_launch_screen )
-        print("Launchscreen Loop ended")
+        #print("Launchscreen Loop ended")
 
     def draw_alien_info(self, screen, x, y, image, name, points):
         # Alien-Bild laden und zeichnen

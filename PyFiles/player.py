@@ -186,6 +186,7 @@ class Player(pg.sprite.Sprite):
 
         if(self.dying_timer.finished()):
             self.sound.play_gameover()
+            self.game_stats.save_highscore()
             self.game.game_over()
 
 

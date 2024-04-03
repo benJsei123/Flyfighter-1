@@ -28,9 +28,7 @@ class GameSettings:
          "tanky_enemy": "Resources/pictures/enemies/tanky_enemy.png",
          "smart_enemy": "Resources/pictures/enemies/smart_enemy.png",
          "default_bullet":"Resources/pictures/bullets/default_bullet.png",
-         "shotgun_bullet":"",
-         "laser_bullet":"",
-         "freezer_bullet":"",
+         "background_launchscreen": "Resources/pictures/background_launchscreen.jpg"
         }
 
 

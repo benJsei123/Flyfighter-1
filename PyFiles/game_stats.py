@@ -18,13 +18,28 @@ class GameStats:
         self.load_highscore()
     
     def load_highscore(self):
-        """ has to load highscore from file and return it"""
-        return 99999999999
-        #TODO implement
-    
+        """Loads highscore and returns"""
+        try:
+            with open('highscore.txt', 'r') as file:
+                highscore = file.read().strip()
+                return int(highscore)
+        except (IOError, ValueError):
+            return 0
+
+
     def save_highscore(self):
-        """ Has to take current sore and compare to what is in fil, then decide if writes score to file"""
-        pass
+        """COmpares current score with highscore and if required writes highscore to highsocre.txt"""
+        current_score = self.score 
+        highscore = self.load_highscore() 
+        if current_score > highscore:
+            
+            try:
+                with open('highscore.txt', 'w') as file:
+                    file.write(str(current_score))
+                print("New highscore saved successfully")
+            except IOError as e:
+                print(f"Error saving highscore {e}")
+
 
     def update(self):
         """Called by scoreboard's update to make sure the level increases every 5 tiles"""
