@@ -53,7 +53,7 @@ class Player(pg.sprite.Sprite):
         self.rect.center = (600,600)
         self.bullet_start_rect = self.rect #TODO maybe adjust this
         self.dying_timer = Timer(
-            image_list = self.game_settings.animation_sequences["player_dying"], 
+            image_list = [pg.image.load(img).convert_alpha() for img in self.game_settings.animation_sequences["player_dying"]],
             start_index=0, 
             delta=6, 
             looponce=True 
@@ -66,8 +66,6 @@ class Player(pg.sprite.Sprite):
         self.center_ship()
         self.background_surface = self.game.background_surface
         self.mask = pg.mask.from_surface(self.original_image) #TODO Consider resetting self.mask = pg.mask.from_surface(self.original_image) after each rotation or movement 
-        self.idle_timer = Timer(self.game_settings.animation_sequences["player_idle"], delta=6,start_index=0, looponce=False)
-        self.dying_timer = Timer(self.game_settings.animation_sequences["player_dying"], delta=6, start_index=0, looponce=True)
         self.firerate_timer = Timer(list(range(30)), start_index=0, delta=30, looponce=False)
 
 
@@ -95,8 +93,12 @@ class Player(pg.sprite.Sprite):
         # Setze Waffen und andere Komponenten zurück, wenn nötig
         self.guns.reset()  
         
-        self.timer = self.idle_timer
-        self.dying_timer = Timer(self.game_settings.animation_sequences["player_dying"], delta=6, start_index=0, looponce=True)
+        self.dying_timer = Timer(
+            image_list = [pg.image.load(img).convert_alpha() for img in self.game_settings.animation_sequences["player_dying"]],
+            start_index=0, 
+            delta=6, 
+            looponce=True 
+            )
         self.firerate_timer = Timer(list(range(30)), start_index=0, delta=30, looponce=False)
         # Positioniere das Schiff im Zentrum des Bildschirms oder an einem anderen Startpunkt
         self.center_ship()
@@ -161,7 +163,12 @@ class Player(pg.sprite.Sprite):
         #Bullet movement
         self.guns.update()
 
-        #self.image = self.timer.current_image()
+        if(self.isdying ==True):
+            print("isdying")
+            self.image= self.dying_timer.current_image()
+            print(self.image)
+
+    
 
     def fire(self):
         # Feuerlogik, die abgefeuerte Geschosse hinzufügt
@@ -171,11 +178,11 @@ class Player(pg.sprite.Sprite):
 
     def explode(self):
 
-        if not self.isdying: 
-            self.timer = self.dying_timer
+        if self.isdying==False: 
             self.isdying = True
 
-        self.game.game_over()
+        if(self.dying_timer.finished()):
+            self.game.game_over()
 
     def handle_input(self, event):
         """handle input and set direction"""

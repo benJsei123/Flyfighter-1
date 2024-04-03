@@ -35,7 +35,7 @@ class GameSettings:
 
 
         self.animation_sequences = {
-            "player_dying": "LIST WITH ANIMATION IMAGE PATHS",
+            "player_dying": glob.glob("Resources/pictures/animations/player_dying/*.png"),
             "player_idle": "LIST WITH ANIMATION IMAG PATHS",
             "fast_enemy_dying": "",
             "tanky_enemy_dying": "",

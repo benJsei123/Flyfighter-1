@@ -44,7 +44,7 @@ class EnemyManager:
 
     def get_smart_enemy(self, pos):
         image_list = [pg.image.load(path) for path in self.game_settings.animation_sequences["smart_enemy_idle"] ]
-        idle_timer = Timer(image_list, start_index=0, delta=20, looponce=False)
+        idle_timer = Timer(image_list, start_index=0, delta=5, looponce=False)
         return SmartEnemy(self.game, self.game.camera_group, pos_x=pos[0], pos_y=pos[1], idle_timer=idle_timer)
 
     def get_current_enemies(self):
