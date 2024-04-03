@@ -73,6 +73,7 @@ class Map:
         self.check_player_powerup_collision()
         self.check_enemy_tile_collision()
         self.check_enemy_enemy_collision()
+        self.check_player_enemy_collision()
         self.check_player_tile_collision()
         self.check_bullet_tile_colllision()
         self.check_bullet_player_collision()
@@ -102,6 +103,13 @@ class Map:
         # Neugenerieren der initialen Map und Setzen der Spielerposition zurück.
         self.initialize_map()
         self.set_player(self.game.player)
+
+
+    def check_player_enemy_collision(self):
+        cur_enemies = self.enemy_mgr.get_current_enemies()
+        for enemy in cur_enemies:
+            if(self.player.rect.colliderect(enemy.rect)):
+                self.player.player_stats.take_damage(1)
 
 
     def check_player_powerup_collision(self):

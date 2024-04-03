@@ -241,5 +241,6 @@ class PlayerStats:
         if(self.damage <= 10): self.damage += amnt
 
     def take_damage(self,amnt):
-        self.hp -= amnt
-        self.sound.play_player_hit_sound()
+        if(self.hp>=0):
+            self.hp -= amnt
+            self.sound.play_player_hit_sound()
