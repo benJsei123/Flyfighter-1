@@ -7,7 +7,7 @@ Pygame project for CPSC-386 at CSUF in 2024.
 - With an increasing score, *difficulty* will increase (increasing opponent spawn probability and opponent shooting frequency)
 - Make sure to collect enough *powerups* to be able to keep up with your opponents. 
 - You will encounter 3 types of *opponents*: An easy opponent that just shoots you, a moving opponent who shoots and chases you, a tanky opponent who shoots you and has extra heartpoints.
-- At one point in the game all your stats will be maxed out and only your skills will help you to achieve a higher score. Have fun!
+- At one point in the game all your stats will be maxed out and only your skills will help you to achieve a higher score. Have fun and try to beat my high score!
 
 
 ## Special feature(s)
