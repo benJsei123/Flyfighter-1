@@ -104,7 +104,7 @@ class Enemy(Sprite, ABC):
     def take_damage(self):
         self.hp-= self.player.player_stats.damage
         if(self.hp <= 0):
-            if(self.guns):self.guns.reset() #remove bulles 
+            #if(self.guns):self.guns.reset() #remove bulles 
             self.guns=None
             self.kill()
             self.sound.play_enemy_dead_sound()
